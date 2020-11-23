@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public delegate void EventActionCallBack();
 
@@ -114,14 +115,26 @@ public struct ReckoningEvent
     public ReckoningCallBack callBack;
     public ReckoningSource source;
     public Investigator investigator;
+    public Sprite icon;
 
-    public ReckoningEvent(string ti, string te, ReckoningCallBack cb, ReckoningSource s, Investigator i)
+    public ReckoningEvent(string ti, string te, ReckoningCallBack cb, ReckoningSource s, Investigator i, Sprite ic)
     {
         title = ti;
         text = te;
         callBack = cb;
         source = s;
         investigator = i;
+        icon = ic;
+    }
+
+    public ReckoningEvent(string ti, string te, ReckoningCallBack cb, ReckoningSource s, Sprite ic)
+    {
+        title = ti;
+        text = te;
+        callBack = cb;
+        source = s;
+        investigator = null;
+        icon = ic;
     }
 }
 
@@ -130,12 +143,18 @@ public struct MultipleOptionMenuObject
     public MultipleOptionType objectType;
     public Monster monster;
     public Asset asset;
+    public Investigator investigator;
+    public TestStat stat;
+    public ReckoningEvent reckoning;
 
     public MultipleOptionMenuObject(MultipleOptionType type, Monster m)
     {
         objectType = type;
         monster = m;
         asset = null;
+        investigator = null;
+        stat = TestStat.None;
+        reckoning = new ReckoningEvent();
     }
 
     public MultipleOptionMenuObject(MultipleOptionType type, Asset a)
@@ -143,5 +162,43 @@ public struct MultipleOptionMenuObject
         objectType = type;
         monster = null;
         asset = a;
+        investigator = null;
+        stat = TestStat.None;
+        reckoning = new ReckoningEvent();
     }
+
+    public MultipleOptionMenuObject(MultipleOptionType type, Investigator i)
+    {
+        objectType = type;
+        monster = null;
+        asset = null;
+        investigator = i;
+        stat = TestStat.None;
+        reckoning = new ReckoningEvent();
+    }
+
+    public MultipleOptionMenuObject(MultipleOptionType type, TestStat s)
+    {
+        objectType = type;
+        monster = null;
+        asset = null;
+        investigator = null;
+        stat = s;
+        reckoning = new ReckoningEvent();
+    }
+
+    public MultipleOptionMenuObject(MultipleOptionType type, ReckoningEvent re)
+    {
+        objectType = type;
+        monster = null;
+        asset = null;
+        investigator = null;
+        stat = TestStat.None;
+        reckoning = re;
+    }
+}
+
+public struct EldritchToken
+{
+
 }

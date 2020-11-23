@@ -31,12 +31,21 @@ public class MonsterModel : MVC
         m.damageTaken = 0;
         monsterPool.RemoveAt(index);
         activeMonsters.Add(m);
+        m.Spawned();
         return m;
     }
 
     public void ReturnMonsterToPool(Monster m)
     {
+        m.Defeated();
         activeMonsters.Remove(m);
         monsterPool.Add(m);
+    }
+
+    public void SpawnEpicMonster(Monster m)
+    {
+        m.damageTaken = 0;
+        activeMonsters.Add(m);
+        m.Spawned();
     }
 }

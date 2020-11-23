@@ -14,7 +14,6 @@ public abstract class Mystery
 
     public int requirement;
 
-
     public virtual void StartMystery() { return; }
 
     public virtual void FinishMystery() { return; }

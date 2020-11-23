@@ -68,5 +68,7 @@ public class ViewContainer : MVC
 
     public ConditionEffectView conditionEffectView;
 
-    public OpenMenuView openMenuView;
+    public SpellEffectView spellEffectView;
+
+    public EndGameView endGameView;
 }

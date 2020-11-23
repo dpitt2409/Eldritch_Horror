@@ -8,6 +8,8 @@ public class ActionPhaseModel : MVC
     public int actionsThisturn = 0;
     List<Investigator> investigators; // If an investigator dies during an encounter, the list order changes
 
+    public bool terminateTurn = false; // Used for when Investigators die/become delayed during the action phase
+
     public void StartActionPhase()
     {
         investigators = new List<Investigator>(App.Model.investigatorModel.investigators);
@@ -18,7 +20,7 @@ public class ActionPhaseModel : MVC
 
     public void ActionPerformed()
     {
-        if (investigators[turnIndex].deathEncounter != null) // Investigator is dead
+        if (investigators[turnIndex].deathEncounter != null || investigators[turnIndex].delayed) // Investigator is dead or delayed
         {
             EndTurn();
             return;
@@ -46,15 +48,34 @@ public class ActionPhaseModel : MVC
         else // More Investigators need to take their Action turn
         {
             Investigator active = investigators[turnIndex];
-            int newIndex = App.Model.investigatorModel.GetInvestigatorIndex(active.investigatorName);
-            App.Controller.investigatorController.NewActiveInvestigator(newIndex);
-            actionsThisturn = 0;
-            if (active.deathEncounter != null) // Investigator is dead
+            if (active.delayed)
+            {
+                active.StopBeingDelayed();
+                EndTurn();
+            }
+            else if (active.deathEncounter != null)
             {
                 EndTurn();
-                return;
             }
-            App.View.actionPhaseView.ActionTurnStarted();
+            else
+            {
+                int newIndex = App.Model.investigatorModel.GetInvestigatorIndex(active.investigatorName);
+                App.Controller.investigatorController.NewActiveInvestigator(newIndex);
+                actionsThisturn = 0;
+                
+                App.View.actionPhaseView.ActionTurnStarted();
+            }
         }
+    }
+
+    public void TurnToBeTerminated()
+    {
+        terminateTurn = true;
+    }
+
+    public void TerminateTurn()
+    {
+        terminateTurn = false;
+        EndTurn();
     }
 }

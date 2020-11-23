@@ -16,6 +16,8 @@ public class DoomModel : MVC
     public void AdvanceDoom(int amount)
     {
         currentDoom -= amount;
+        if (currentDoom < 0)
+            currentDoom = 0;
         App.View.doomView.DoomUpdated();
     }
 

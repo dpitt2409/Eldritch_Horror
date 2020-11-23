@@ -14,6 +14,8 @@ public abstract class Asset
 
     public AssetSubType[] subTypes;
 
+    public string reckoningText;
+
     public int cost;
 
     public bool artifact;

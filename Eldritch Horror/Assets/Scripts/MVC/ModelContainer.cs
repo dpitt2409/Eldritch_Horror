@@ -14,6 +14,8 @@ public class ModelContainer : MVC
 
     public AssetModel assetModel;
 
+    public SpellModel spellModel;
+
     public ConditionModel conditionModel;
 
     public EncounterModel encounterModel;
@@ -89,4 +91,8 @@ public class ModelContainer : MVC
     public ConditionEffectModel conditionEffectModel;
 
     public OpenMenuModel openMenuModel;
+
+    public SpellEffectModel spellEffectModel;
+
+    public ArtifactModel artifactModel;
 }

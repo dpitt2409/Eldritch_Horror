@@ -11,6 +11,11 @@ public class ReckoningMythosController : MVC
         App.Model.reckoningMythosModel.SortReckonings();
     }
 
+    public void SetReckoningText(string text)
+    {
+        App.View.ReckoningMythosView.SetReckoningText(text);
+    }
+
     public void Next()
     {
         App.View.ReckoningMythosView.ReckoningFinished();
@@ -38,6 +43,7 @@ public class ReckoningMythosController : MVC
             else
             {
                 // Reckoning is over
+                App.Controller.investigatorController.NewActiveInvestigator(0);// Set Lead Investigator to active
                 App.Controller.mythosController.NextMythosEffect();
             }
         }
@@ -45,28 +51,29 @@ public class ReckoningMythosController : MVC
 
     public void SelectNextReckoning()
     {
-        List<ReckoningEvent> list = App.Model.reckoningMythosModel.currentEvents;
-        if (list.Count == 0)
+        List<MultipleOptionMenuObject> options = new List<MultipleOptionMenuObject>();
+        foreach (ReckoningEvent re in App.Model.reckoningMythosModel.currentEvents)
         {
-            ReckoningSelected(0);
+            options.Add(new MultipleOptionMenuObject(MultipleOptionType.Reckoning, re));
         }
-        else
-        {
-            // Open up options menu, point to ReckoningSelected with given index
-            ReckoningSelected(0);
-        }
-
+        App.Controller.multipleOptionController.StartMultipleOption(options, "Select a Reckoning to Resolve", ReckoningSelected);
     }
 
     public void ReckoningSelected(int index)
     {
         ReckoningEvent re = App.Model.reckoningMythosModel.currentEvents[index];
+        if (re.source == ReckoningSource.Investigator) // Set active investigator to reckoning source
+        {
+            Investigator i = re.investigator;
+            int invIndex = App.Model.investigatorModel.GetInvestigatorIndex(i.investigatorName);
+            App.Controller.investigatorController.NewActiveInvestigator(invIndex);
+        }
+        
         App.Model.reckoningMythosModel.StartReckoningEvent(index);
         re.callBack();
-        // Reckonings must call App.Model.reckoningMythosModel.AddReckoningEvent() in response to the ReckoningEvent
-        // Reckonings call FinishReckoning when they're done
     }
-
+    // Reckonings must call App.Model.reckoningMythosModel.AddReckoningEvent() in response to the ReckoningEvent
+    // Reckonings call FinishReckoning when they're done
     public void FinishReckoning() // Called externally from a finished reckoning event
     {
         App.Model.reckoningMythosModel.FinishReckoning(); // Removes current event from list and enables next button

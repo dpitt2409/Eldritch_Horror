@@ -22,8 +22,9 @@ public class GameManager : MVC
         StartGame();
     }
     
-    // Game Setup -> Select Lead Investigator -> Start Action Phase -> Start Encounter Phase -> Start Mythos Phase -> Check Mystery
-
+    // Game Setup -> Draw First Mystery ->
+    // Select Lead Investigator -> Start Action Phase -> Start Encounter Phase -> Start Mythos Phase -> Check Mystery
+    
     public void StartGame()
     {
         if (App.Model.setupModel.skipSetup)
@@ -38,14 +39,20 @@ public class GameManager : MVC
 
     public void SetupFinished()
     {
-        App.Controller.investigatorController.StartLeadInvestigatorSelection();
+        App.Controller.mysteryController.DrawFirstMystery();
     }
 
     public void LeadInvestigatorSelected()
     {
         // Start Action Phase
         App.Controller.actionPhaseController.StartActionPhase();
+
         /*
+        App.Model.clueModel.SpawnClues(10); // Spawn 10 Clues
+        Location l = App.Model.locationModel.FindLocationByName("Antarctica");
+        App.Controller.locationController.SpawnGate(l);
+        App.Model.gateModel.SpawnGateInLocation(l);
+        
         App.Model.clueModel.SpawnClues(10); // Spawn 10 Clues
         foreach(Location l in App.Model.gateModel.DrawGates(3)) // Spawn 3 Gates
         {
@@ -79,7 +86,7 @@ public class GameManager : MVC
     public void MysteryChecked()
     {
         // Reset round
-        RoundFinished();
+        App.Model.eventModel.NewRoundEvent();
         // Check for Dead Investigators
         App.Controller.queueController.CreateCallBackQueue(StartNextRound); // Create Queue
         foreach (Investigator i in App.Model.investigatorModel.investigators)
@@ -97,14 +104,6 @@ public class GameManager : MVC
     {
         // Select Lead Investigator
         App.Controller.investigatorController.StartLeadInvestigatorSelection();
-    }
-
-    private void RoundFinished()
-    {
-        foreach (Investigator i in App.Model.investigatorModel.investigators)
-        {
-            i.NewRound();
-        }
     }
 
     public void DebugHelper(string s)

@@ -13,6 +13,15 @@ public class MysteryView : MVC
     private Text mysteryProgress;
     private Text mysteryText;
 
+    private GameObject newMysteryMenu;
+    private Text newMysterySolvedText;
+    private GameObject newMysteryScreen;
+    private GameObject minimizeNewMysteryMenuButton;
+    private GameObject newMysteryMenuContinueButton;
+    private Text newMysteryTitle;
+    private Text newMysteryFlavorText;
+    private Text newMysteryText;
+
     void Awake()
     {
         mysteryUI = transform.GetChild(0).GetChild(0).gameObject;
@@ -23,10 +32,22 @@ public class MysteryView : MVC
         mysteryProgress = mysteryInfo.transform.GetChild(2).GetComponent<Text>();
         mysteryText = mysteryInfo.transform.GetChild(3).GetComponent<Text>();
 
+        newMysteryMenu = transform.GetChild(0).GetChild(2).gameObject;
+        newMysterySolvedText = newMysteryMenu.transform.GetChild(0).GetComponent<Text>();
+        newMysteryScreen = newMysteryMenu.transform.GetChild(1).gameObject;
+        minimizeNewMysteryMenuButton = newMysteryMenu.transform.GetChild(2).gameObject;
+        newMysteryMenuContinueButton = newMysteryMenu.transform.GetChild(3).gameObject;
+        newMysteryTitle = newMysteryScreen.transform.GetChild(0).GetComponent<Text>();
+        newMysteryFlavorText = newMysteryScreen.transform.GetChild(1).GetComponent<Text>();
+        newMysteryText = newMysteryScreen.transform.GetChild(2).GetComponent<Text>();
+
         mysteryUI.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.mysteryController.ToggleMysteryInfo(); });
+        minimizeNewMysteryMenuButton.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.openMenuController.MinimizeOpenMenu(); });
+        newMysteryMenuContinueButton.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.mysteryController.NewMysteryContinue(); });
 
         mysteryUI.SetActive(false);
         mysteryInfo.SetActive(false);
+        newMysteryMenu.SetActive(false);
     }
 
     public void EnableMysteryUI()
@@ -41,7 +62,16 @@ public class MysteryView : MVC
 
     public void ToggleMysteryInfo()
     {
-        mysteryInfo.SetActive(!mysteryInfo.activeSelf);
+        if (mysteryInfo.activeSelf)
+        {
+            App.Controller.openMenuController.ClosePopup();
+            mysteryInfo.SetActive(false);
+        }
+        else
+        {
+            App.Controller.openMenuController.OpenPopup(mysteryInfo);
+            mysteryInfo.SetActive(true);
+        }
     }
 
     public void UpdateMysteryInfo()
@@ -53,5 +83,32 @@ public class MysteryView : MVC
         mysteryDescription.text = m.mysteryDescription;
         mysteryProgress.text = App.Model.mysteryModel.mysteryProgress + " / " + m.requirement;
         mysteryText.text = m.mysteryText;
+    }
+
+    public void MysterySolved()
+    {
+        newMysteryMenu.SetActive(true);
+        App.Controller.openMenuController.OpenMenu(newMysteryMenu);
+        newMysteryScreen.SetActive(false);
+        newMysterySolvedText.text = App.Model.mysteryModel.activeMystery.mysteryName + " Mystery Solved!";
+    }
+
+    public void NewMystery()
+    {
+        newMysteryMenu.SetActive(true);
+        App.Controller.openMenuController.OpenMenu(newMysteryMenu);
+        newMysterySolvedText.text = "";
+        newMysteryScreen.SetActive(true);
+
+        Mystery m = App.Model.mysteryModel.activeMystery;
+        newMysteryTitle.text = m.mysteryName;
+        newMysteryFlavorText.text = m.mysteryDescription;
+        newMysteryText.text = m.mysteryText;
+    }
+
+    public void NewMysteryContinue()
+    {
+        newMysteryMenu.SetActive(false);
+        App.Controller.openMenuController.CloseMenu();
     }
 }

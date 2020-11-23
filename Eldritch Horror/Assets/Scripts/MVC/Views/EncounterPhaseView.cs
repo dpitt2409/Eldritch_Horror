@@ -45,6 +45,12 @@ public class EncounterPhaseView : MVC
 
         // Check if location has a mystery related encounter on it
         // Check if location has a Rumor encounter on it
+        foreach (OngoingEffect oe in l.ongoingEffectsOnLocation)
+        {
+            GameObject  rumor = Instantiate(encounterOptionButton, encounterOptionsParent.transform);
+            rumor.GetComponentInChildren<Text>().text = oe.effectTitle + " Encounter";
+            rumor.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.encounterPhaseController.ChooseOngoingEffectEncounter(oe); });
+        }
         // Check if location has an expedition token on it
         if (l.expeditionsOnLocation.Count > 0)
         {

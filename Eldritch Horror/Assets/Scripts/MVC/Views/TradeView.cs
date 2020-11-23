@@ -11,6 +11,8 @@ public class TradeView : MVC
     private GameObject possessionButton;
     [SerializeField]
     private GameObject assetButton;
+    [SerializeField]
+    private GameObject spellButton;
 
     private GameObject tradeMenu;
     private GameObject selectInvestigatorScreen;
@@ -125,6 +127,24 @@ public class TradeView : MVC
         }
 
         // Spells
+        foreach (Spell s in inv.spells)
+        {
+            GameObject spell = Instantiate(spellButton, possessionParent.transform);
+            spell.GetComponent<Image>().sprite = s.spellPortrait;
+            spell.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = s.spellName;
+            spell.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "" + s.type;
+            spell.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = "" + s.text;
+            if (s.reckoningText == "")
+            {
+                spell.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
+            }
+            else
+            {
+                spell.transform.GetChild(0).GetChild(3).gameObject.SetActive(true);
+                spell.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = s.reckoningText;
+            }
+            spell.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.tradeController.TradeSpell(s, inv); });
+        }
 
         // Assets
         foreach (Asset a in inv.assets)
@@ -137,6 +157,14 @@ public class TradeView : MVC
             asset.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "" + a.type;
             asset.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = "" + a.text;
             asset.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
+            if (a.reckoningText == "")
+            {
+                asset.transform.GetChild(0).GetChild(4).gameObject.SetActive(false);
+            }
+            else
+            {
+                asset.transform.GetChild(0).GetChild(4).GetChild(0).GetComponent<Text>().text = a.reckoningText;
+            }
             asset.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.tradeController.TradeAsset(a, inv); });
         }
     }

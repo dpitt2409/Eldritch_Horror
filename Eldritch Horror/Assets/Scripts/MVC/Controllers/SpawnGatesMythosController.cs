@@ -15,7 +15,7 @@ public class SpawnGatesMythosController : MVC
             int advaceAmount = (numGates-gates.Count);
             App.Model.doomModel.AdvanceDoom(advaceAmount);
             App.Controller.queueController.CreateCallBackQueue(DoomAdvanced); // Create Queue
-            App.Model.eventModel.DoomAdvanced(); // Populate Queue
+            App.Model.eventModel.DoomAdvancedEvent(advaceAmount); // Populate Queue
             App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
         else

@@ -15,6 +15,7 @@ public class AxeAsset : Asset
         cost = 2;
         artifact = false;
         magical = false;
+        reckoningText = "";
 
         ownedInvestigator = null;
     }

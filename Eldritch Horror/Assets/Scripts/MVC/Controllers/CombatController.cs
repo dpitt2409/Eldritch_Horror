@@ -192,10 +192,10 @@ public class CombatController : MVC
         {
             m.damageTaken += App.Model.combatModel.numSuccesses;
             App.View.combatView.DamageTaken();
+            Location l = App.Model.investigatorModel.activeInvestigator.currentLocation;
             if (m.damageTaken >= m.toughness)
             {
                 // Monster is dead
-                Location l = App.Model.investigatorModel.activeInvestigator.currentLocation;
                 App.Controller.locationController.RemoveMonsterFromLocation(m, l);
                 App.Model.monsterModel.ReturnMonsterToPool(m);
 
@@ -207,6 +207,7 @@ public class CombatController : MVC
             {
                 // Monster is not dead
                 m.FinishTest2(success);
+                App.View.locationView.LocationUpdated(l);
             }
         }
         else

@@ -5,8 +5,8 @@ using UnityEngine;
 public class OpenMenuModel : MVC
 {
     public List<GameObject> openMenus;
-
     public bool testing = false;
+    public GameObject openPopup;
 
     public void MenuOpened(GameObject menu)
     {
@@ -26,5 +26,15 @@ public class OpenMenuModel : MVC
     public void FinishTesting()
     {
         testing = false;
+    }
+
+    public void OpenPopup(GameObject popup)
+    {
+        openPopup = popup;
+    }
+
+    public void ClosePopup()
+    {
+        openPopup = null;
     }
 }

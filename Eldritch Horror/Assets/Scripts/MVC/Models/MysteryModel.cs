@@ -29,8 +29,6 @@ public class MysteryModel : MVC
     {
         activeMysteryDeck = bossMysteryDecks[App.Model.ancientOneModel.ancientOne.ancientOneName]; // Set Deck based on chosen Ancient One
         App.View.mysteryView.EnableMysteryUI(); // Enable Mystery Icon
-
-        DrawNewMystery(); // Start the first mystery
     }
 
     public void DrawNewMystery()
@@ -41,6 +39,7 @@ public class MysteryModel : MVC
         // activeMysteryDeck.RemoveAt(index);
         mysteryProgress = 0;
         App.View.mysteryView.UpdateMysteryInfo();
+        App.View.mysteryView.NewMystery();
     }
 
     public void MysterySolved()
@@ -48,6 +47,7 @@ public class MysteryModel : MVC
         activeMystery.FinishMystery();
         mysteriesSolved++;
         App.View.mysteryView.UpdateMysteryInfo();
+        App.View.mysteryView.MysterySolved();
     }
 
     public void AdvanceMystery()

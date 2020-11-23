@@ -8,6 +8,8 @@ public class GateModel : MVC
     public List<Location> activeGates;
     public List<Location> gateDiscard;
 
+    public Location currentClosingGate;
+
     void Start()
     {
         gatePool = new List<Location>();
@@ -45,9 +47,31 @@ public class GateModel : MVC
         return gateLocations;
     }
 
+    public void SpawnGateInLocation(Location l)
+    {
+        Location gate = null;
+        foreach (Location g in gatePool)
+        {
+            if (g.locationName == l.locationName)
+            {
+                gate = g;
+            }
+        }
+        if (gate != null)
+        {
+            activeGates.Add(gate);
+            gatePool.Remove(gate);
+        }
+    }
+
     public void CloseGate(Location l)
     {
         activeGates.Remove(l);
         gateDiscard.Add(l);
+    }
+
+    public void SetClosingGate(Location l)
+    {
+        currentClosingGate = l;
     }
 }

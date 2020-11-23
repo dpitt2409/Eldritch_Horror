@@ -85,7 +85,7 @@ public class DebtCondition : Condition
     public void ReckoningEvent()
     {
         string title = owner.investigatorName + " Debt Reckoning";
-        ReckoningEvent re = new ReckoningEvent(title, reckoningText, StartReckoning, ReckoningSource.Investigator, owner);
+        ReckoningEvent re = new ReckoningEvent(title, reckoningText, StartReckoning, ReckoningSource.Investigator, owner, conditionPortrait);
         GameManager.SingleInstance.App.Model.reckoningMythosModel.AddReckoningEvent(re);
     }
 
@@ -98,6 +98,8 @@ public class DebtCondition : Condition
     {
         //GameManager.SingleInstance.App.View.ReckoningMythosView.ReckoningMinimized();
         GameManager.SingleInstance.App.Controller.openMenuController.HideOpenMenu();
+        string finishedText = owner.investigatorName + "'s Debt has been resolved.";
+        GameManager.SingleInstance.App.Controller.reckoningMythosController.SetReckoningText(finishedText);
         switch (copyIndex)
         {
             case 0:

@@ -5,12 +5,16 @@ using UnityEngine;
 public class EventModel : MVC
 {
     public delegate void VoidEvent();
+    public delegate void IntEvent(int num);
     public delegate void DamageEvent(Investigator i, int damage);
     public delegate void LocationEvent(Location l);
     public delegate void MonsterEvent(Monster m);
     public delegate void ConditionEvent(Condition c);
+    public delegate void SpellEvent(Spell s);
+    public delegate void StatEvent(Investigator i, TestStat stat);
+    public event VoidEvent newRoundEvent;
     public event VoidEvent actionListEvent;
-    public event VoidEvent travelEvent;
+    public event LocationEvent travelEvent;
     public event VoidEvent restEvent;
     public event VoidEvent preTestEvent;
     public event VoidEvent postTestEvent;
@@ -21,13 +25,23 @@ public class EventModel : MVC
     public event DamageEvent loseSanityEvent;
     public event DamageEvent loseHealthEvent;
     public event VoidEvent damageTakenEvent;
+    public event LocationEvent otherworldlyCloseGateEvent;
     public event LocationEvent spawnGateEvent;
     public event LocationEvent closeGateEvent;
-    public event VoidEvent doomAdvancedEvent;
+    public event IntEvent doomRetreatedEvent;
+    public event IntEvent doomAdvancedEvent;
     public event MonsterEvent monsterSpawnedEvent;
     public event MonsterEvent monsterKilledEvent;
     public event VoidEvent reckoningEvent;
     public event ConditionEvent conditionLostEvent;
+    public event SpellEvent spellLostEvent;
+    public event StatEvent statImprovedEvent;
+
+    public void NewRoundEvent()
+    {
+        if (newRoundEvent != null)
+            newRoundEvent.Invoke();
+    }
 
     public void ActionListEvent()
     {
@@ -35,10 +49,10 @@ public class EventModel : MVC
             actionListEvent.Invoke();
     }
 
-    public void TravelEvent()
+    public void TravelEvent(Location l)
     {
         if (travelEvent != null)
-            travelEvent.Invoke();
+            travelEvent.Invoke(l);
     }
 
     public void RestEvent()
@@ -100,7 +114,12 @@ public class EventModel : MVC
         if (loseHealthEvent != null)
             loseHealthEvent.Invoke(i, amount);
     }
-
+    public void OtherworldlyCloseGateEvent(Location l)
+    {
+        if (otherworldlyCloseGateEvent != null)
+            otherworldlyCloseGateEvent.Invoke(l);
+    }
+    
     public void SpawnGateEvent(Location l)
     {
         if (spawnGateEvent != null)
@@ -113,10 +132,16 @@ public class EventModel : MVC
             closeGateEvent.Invoke(l);
     }
 
-    public void DoomAdvanced()
+    public void DoomRetreatedEvent(int num)
+    {
+        if (doomRetreatedEvent != null)
+            doomRetreatedEvent.Invoke(num);
+    }
+
+    public void DoomAdvancedEvent(int num)
     {
         if (doomAdvancedEvent != null)
-            doomAdvancedEvent.Invoke();
+            doomAdvancedEvent.Invoke(num);
     }
 
     public void MonsterSpawnedEvent(Monster m)
@@ -141,5 +166,16 @@ public class EventModel : MVC
     {
         if (conditionLostEvent != null)
             conditionLostEvent.Invoke(c);
+    }
+    public void SpellLostEvent(Spell s)
+    {
+        if (spellLostEvent != null)
+            spellLostEvent.Invoke(s);
+    }
+
+    public void StatImprovedEvent(Investigator i, TestStat stat)
+    {
+        if (statImprovedEvent != null)
+            statImprovedEvent.Invoke(i, stat);
     }
 }

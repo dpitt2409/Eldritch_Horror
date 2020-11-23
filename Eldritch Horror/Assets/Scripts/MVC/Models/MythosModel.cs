@@ -10,7 +10,6 @@ public class MythosModel : MVC
     public Mythos activeMythos;
     public int activeIndex = 0;
 
-    // Start is called before the first frame update
     void Start()
     {
         reference = new Dictionary<int, IconReference>();

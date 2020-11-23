@@ -47,6 +47,8 @@ public abstract class Investigator : MVC
 
     public List<Asset> assets;
 
+    public List<Spell> spells;
+
     public InvestigatorPossessions possessions;
 
     public Encounter deathEncounter;
@@ -56,12 +58,15 @@ public abstract class Investigator : MVC
     public List<string> actionsTakenThisTurn;
 
     private int incomingDamage = 0;
-    
+
+    public bool delayed = false;
+
     public void Start()
     {
         actionsTakenThisTurn = new List<string>();
         conditions = new List<Condition>();
         assets = new List<Asset>();
+        spells = new List<Spell>();
         clues = new List<Clue>();
         SUCCESS = 5;
     }
@@ -72,12 +77,15 @@ public abstract class Investigator : MVC
     {
         App.Controller.locationController.EnterStartingLocation(this, startingLocation);
         GainStartingItems();
+
         App.Model.eventModel.damageTakenEvent += DamageTakenEvent;
+        GameManager.SingleInstance.App.Model.eventModel.newRoundEvent += RoundReset;
     }
 
     public virtual void LeaveGame()
     {
         App.Model.eventModel.damageTakenEvent -= DamageTakenEvent;
+        GameManager.SingleInstance.App.Model.eventModel.newRoundEvent -= RoundReset;
     }
 
     public void GainStartingItems()
@@ -94,10 +102,20 @@ public abstract class Investigator : MVC
                     a.Gained();
                 }
             }
+            if (item.type == StartingItemType.Spell)
+            {
+                Spell s = App.Model.spellModel.DrawSpellByName(item.val);
+                if (s != null)
+                {
+                    spells.Add(s);
+                    s.owner = this;
+                    s.Gained();
+                }
+            }
         }
     }
 
-    public void NewRound()
+    public void RoundReset()
     {
         actionsTakenThisTurn.Clear();
     }
@@ -105,6 +123,18 @@ public abstract class Investigator : MVC
     public void EnterLocation(Location l)
     {
         currentLocation = l;
+    }
+
+    public void BecomeDelayed()
+    {
+        delayed = true;
+        App.View.locationView.LocationUpdated(currentLocation);
+    }
+
+    public void StopBeingDelayed()
+    {
+        delayed = false;
+        App.View.locationView.LocationUpdated(currentLocation);
     }
 
     public int CheckStat(TestStat stat)
@@ -135,6 +165,68 @@ public abstract class Investigator : MVC
         if (stat == TestStat.Will)
             return willMod;
         return 0;
+    }
+
+    public List<TestStat> ImprovableSkills()
+    {
+        List<TestStat> improvable = new List<TestStat>();
+        if (influenceMod < 2)
+            improvable.Add(TestStat.Influence);
+        if (loreMod < 2)
+            improvable.Add(TestStat.Lore);
+        if (observationMod < 2)
+            improvable.Add(TestStat.Observation);
+        if (strengthMod < 2)
+            improvable.Add(TestStat.Strength);
+        if (willMod < 2)
+            improvable.Add(TestStat.Will);
+        return improvable;
+    }
+
+    public List<TestStat> ImpairableSkills()
+    {
+        List<TestStat> improvable = new List<TestStat>();
+        if (influenceMod > -2)
+            improvable.Add(TestStat.Influence);
+        if (loreMod > -2)
+            improvable.Add(TestStat.Lore);
+        if (observationMod > -2)
+            improvable.Add(TestStat.Observation);
+        if (strengthMod > -2)
+            improvable.Add(TestStat.Strength);
+        if (willMod > -2)
+            improvable.Add(TestStat.Will);
+        return improvable;
+    }
+
+    public void ImproveStat(TestStat stat)
+    {
+        if (stat == TestStat.Influence)
+            influenceMod++;
+        if (stat == TestStat.Lore)
+            loreMod++;
+        if (stat == TestStat.Observation)
+            observationMod++;
+        if (stat == TestStat.Strength)
+            strengthMod++;
+        if (stat == TestStat.Will)
+            willMod++;
+        App.Controller.previewedInvestigatorController.UpdateInvestigator();
+    }
+
+    public void ImpairStat(TestStat stat)
+    {
+        if (stat == TestStat.Influence)
+            influenceMod--;
+        if (stat == TestStat.Lore)
+            loreMod--;
+        if (stat == TestStat.Observation)
+            observationMod--;
+        if (stat == TestStat.Strength)
+            strengthMod--;
+        if (stat == TestStat.Will)
+            willMod--;
+        App.Controller.previewedInvestigatorController.UpdateInvestigator();
     }
 
     public void GainHealth(int amount)
@@ -218,7 +310,7 @@ public abstract class Investigator : MVC
         // Advance Doom by 1
         App.Model.doomModel.AdvanceDoom(1);
         App.Controller.queueController.CreateCallBackQueue(DeathCallBack); // Create Queue
-        App.Model.eventModel.DoomAdvanced(); // Populate Queue
+        App.Model.eventModel.DoomAdvancedEvent(1); // Populate Queue
         GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
     }
 
@@ -304,6 +396,36 @@ public abstract class Investigator : MVC
             assets.RemoveAt(index);
             a.ownedInvestigator = null;
             a.Lost();
+            App.Controller.previewedInvestigatorController.UpdateInvestigator();
+        }
+    }
+
+    public void GainSpell(Spell s)
+    {
+        if (s != null)
+        {
+            spells.Add(s);
+            s.owner = this;
+            s.Gained();
+            App.Controller.previewedInvestigatorController.UpdateInvestigator();
+        }
+    }
+
+    public void LoseSpell(Spell s)
+    {
+        int index = -1;
+        for (int i = 0; i < spells.Count; i++)
+        {
+            if (spells[i].spellName == s.spellName)
+            {
+                index = i;
+            }
+        }
+        if (index != -1)
+        {
+            spells.RemoveAt(index);
+            s.owner = null;
+            s.Lost();
             App.Controller.previewedInvestigatorController.UpdateInvestigator();
         }
     }
@@ -560,6 +682,20 @@ public abstract class Investigator : MVC
         else
         {
             assets.Remove(a);
+        }
+        App.Controller.previewedInvestigatorController.UpdateInvestigator();
+    }
+
+    public void TradeSpell(Spell s, bool gained)
+    {
+        if (gained)
+        {
+            spells.Add(s);
+            s.owner = this;
+        }
+        else
+        {
+            spells.Remove(s);
         }
         App.Controller.previewedInvestigatorController.UpdateInvestigator();
     }

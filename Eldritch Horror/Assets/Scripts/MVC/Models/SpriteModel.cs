@@ -24,6 +24,8 @@ public class SpriteModel : MVC
 
     public Sprite expeditionSprite;
 
+    public Sprite eldritchTokenSprite;
+
     private Dictionary<GateColor, Color> gateColors;
     private Dictionary<int, Sprite> omenSprites;
 
@@ -61,7 +63,11 @@ public class SpriteModel : MVC
 
     public Sprite personalAssistantSprite;
 
+    public Sprite twinSceptersSprite;
+
     public Sprite ghoulSprite;
+
+    public Sprite feedTheMindSpellSprite;
 
     public void Start()
     {

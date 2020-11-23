@@ -25,10 +25,10 @@ public class AdvanceOmenMythosController : MVC
         }
         else
         {
-            // Advance Doom by 1
+            // Advance Doom by matchingGates
             App.Model.doomModel.AdvanceDoom(matchingGates);
             App.Controller.queueController.CreateCallBackQueue(DoomAdvanced); // Create Queue
-            App.Model.eventModel.DoomAdvanced(); // Populate Queue
+            App.Model.eventModel.DoomAdvancedEvent(matchingGates); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
     }

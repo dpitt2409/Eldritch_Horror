@@ -28,6 +28,8 @@ public class Location
 
     public List<OngoingEffect> ongoingEffectsOnLocation;
 
+    public List<EldritchToken> eldritchTokensOnLocation;
+
     public Location(string location)
     {
         locationName = location;
@@ -37,6 +39,7 @@ public class Location
         expeditionsOnLocation = new List<Expedition>();
         deadInvestigatorsOnLocation = new List<Investigator>();
         ongoingEffectsOnLocation = new List<OngoingEffect>();
+        eldritchTokensOnLocation = new List<EldritchToken>();
     }
 
     public void InvestigatorEnteredLocation(Investigator i)
@@ -111,5 +114,16 @@ public class Location
     {
         if (deadInvestigatorsOnLocation.Contains(i))
             deadInvestigatorsOnLocation.Remove(i);
+    }
+
+    public void EldritchTokenEnteredLocation(EldritchToken et)
+    {
+        eldritchTokensOnLocation.Add(et);
+    }
+
+    public void EldritchTokenLeftLocation(EldritchToken et)
+    {
+        if (eldritchTokensOnLocation.Contains(et))
+            eldritchTokensOnLocation.Remove(et);
     }
 }

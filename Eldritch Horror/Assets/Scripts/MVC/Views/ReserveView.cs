@@ -40,7 +40,16 @@ public class ReserveView : MVC
 
     public void ToggleReserveList()
     {
-        reserveList.SetActive(!reserveList.activeSelf);
+        if (reserveList.activeSelf)
+        {
+            App.Controller.openMenuController.ClosePopup();
+            reserveList.SetActive(false);
+        }
+        else
+        {
+            App.Controller.openMenuController.OpenPopup(reserveList);
+            reserveList.SetActive(true);
+        }
     }
 
     public void ReserveUpdated()
@@ -62,7 +71,16 @@ public class ReserveView : MVC
                 // Set tooltip
                 reserveAssets[i].GetComponent<Tooltip>().EnableToolTip();
                 asset.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = a.assetName;
-                asset.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "" + a.type;
+                string assetType = "" + a.type;
+                if (a.magical || a.subTypes.Length > 0)
+                {
+                    assetType += " - ";
+                    if (a.magical)
+                        assetType += "Magical ";
+                    foreach (AssetSubType subType in a.subTypes)
+                        assetType += "" + subType + " ";
+                }
+                asset.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = assetType;
                 asset.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = "" + a.text;
                 asset.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = "" + a.cost;
             }

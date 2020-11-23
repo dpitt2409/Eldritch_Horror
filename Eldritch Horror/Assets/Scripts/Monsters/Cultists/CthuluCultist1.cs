@@ -22,4 +22,13 @@ public class CthuluCultist1 : Monster
         testMods[1] = 0;
     }
 
+    public override void Defeated()
+    {
+
+    }
+
+    public override void Spawned()
+    {
+
+    }
 }

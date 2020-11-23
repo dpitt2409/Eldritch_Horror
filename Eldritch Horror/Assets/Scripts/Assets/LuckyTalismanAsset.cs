@@ -15,6 +15,7 @@ public class LuckyTalismanAsset : Asset
         cost = 3;
         artifact = false;
         magical = false;
+        reckoningText = "";
 
         ownedInvestigator = null;
     }

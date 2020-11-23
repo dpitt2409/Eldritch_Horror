@@ -10,6 +10,8 @@ public class ControllerContainer : MVC
 
     public InvestigatorController investigatorController;
 
+    public AncientOneController ancientOneController;
+
     public MysteryController mysteryController;
 
     public PreviewedInvestigatorController previewedInvestigatorController;
@@ -69,4 +71,8 @@ public class ControllerContainer : MVC
     public ConditionEffectController conditionEffectController;
 
     public OpenMenuController openMenuController;
+
+    public SpellEffectController spellEffectController;
+
+    public EndGameController endGameController;
 }

@@ -68,7 +68,7 @@ public class MichaelMcGlenHealthDeathEncounter : Encounter
             // Retreat doom by 1
             GameManager.SingleInstance.App.Model.doomModel.RetreatDoom(1);
             GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(DoomRetreated); // Create Queue
-            GameManager.SingleInstance.App.Model.eventModel.DoomAdvanced(); // Populate Queue
+            GameManager.SingleInstance.App.Model.eventModel.DoomRetreatedEvent(1); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
         else

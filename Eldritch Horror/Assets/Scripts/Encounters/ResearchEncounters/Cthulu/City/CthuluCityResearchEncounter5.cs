@@ -7,7 +7,7 @@ public class CthuluCityResearchEncounter5 : Encounter
     public CthuluCityResearchEncounter5()
     {
         title = "City Research Encounter";
-        testStat = TestStat.Lore;
+        testStat = TestStat.Observation;
         testModifier = 0;
         encounterText = "You dream of a city built from massive green stones set at non-Euclidean angles. You try to retain as many details as you can to investigate when you wake up. \n\r Test Observation \n\r If you pass, you identify the locatin by the stars overhead; gain this Clue and 1 additional Clue. \n\r If you fail, the details of the dream are too horrible to remember; lose 1 Sanity.";
         passText = "Pass \n\r Gain this Clue and 1 additional Clue";

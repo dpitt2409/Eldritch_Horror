@@ -37,6 +37,15 @@ public abstract class AncientOne
 
     public Monster cultist2;
 
+    public bool flipped = false;
+
+    public bool finalMysteryActive = false;
+
     public abstract Dictionary<LocationType, List<Encounter>> CreateResearchDeck();
 
+    public abstract void EnterPlay();
+
+    public abstract void LeavePlay();
+
+    public abstract void AllMysteriesSolved();
 }

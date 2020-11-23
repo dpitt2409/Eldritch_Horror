@@ -9,6 +9,35 @@ public class TradeController : MVC
         App.View.tradeView.TradeActionStarted();
     }
 
+    public void InvestigatorSelected(int index)
+    {
+        Investigator active = App.Model.investigatorModel.activeInvestigator;
+        List<Investigator> investigators = new List<Investigator>();
+        foreach (Investigator i in active.currentLocation.investigatorsOnLocation)
+        {
+            if (i.investigatorName != active.investigatorName)
+            {
+                investigators.Add(i);
+            }
+        }
+        Investigator partner = null;
+        for (int i = 0; i < investigators.Count; i++)
+        {
+            if (i == index)
+            {
+                partner = investigators[i];
+            }
+        }
+        if (partner == null)
+        {
+            Debug.LogError("Error Selecting Trade Partner");
+        }
+        else
+        {
+            BeginTrade(partner);
+        }
+    }
+
     public void BeginTrade(Investigator i)
     {
         App.Model.tradeModel.BeginTrade(i);
@@ -184,6 +213,26 @@ public class TradeController : MVC
             // i1 gains asset
             i2.TradeAsset(a, false);
             i1.TradeAsset(a, true);
+        }
+        App.View.tradeView.TradeMade();
+    }
+
+    public void TradeSpell(Spell s, Investigator previousOwner)
+    {
+        Investigator i1 = App.Model.tradeModel.investigator1;
+        Investigator i2 = App.Model.tradeModel.investigator2;
+
+        if (previousOwner.investigatorName == i1.investigatorName)
+        {
+            // i2 gains spell
+            i1.TradeSpell(s, false);
+            i2.TradeSpell(s, true);
+        }
+        else
+        {
+            // i1 gains spell
+            i2.TradeSpell(s, false);
+            i1.TradeSpell(s, true);
         }
         App.View.tradeView.TradeMade();
     }

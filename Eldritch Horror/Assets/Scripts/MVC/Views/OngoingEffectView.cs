@@ -80,6 +80,15 @@ public class OngoingEffectView : MVC
 
     public void ToggleOngoingEffectList()
     {
-        ongoingEffectsList.SetActive(!ongoingEffectsList.activeSelf);
+        if (ongoingEffectsList.activeSelf)
+        {
+            App.Controller.openMenuController.ClosePopup();
+            ongoingEffectsList.SetActive(false);
+        }
+        else
+        {
+            App.Controller.openMenuController.OpenPopup(ongoingEffectsList);
+            ongoingEffectsList.SetActive(true);
+        }
     }
 }

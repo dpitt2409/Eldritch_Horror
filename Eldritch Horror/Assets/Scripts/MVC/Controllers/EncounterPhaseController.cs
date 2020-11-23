@@ -41,6 +41,12 @@ public class EncounterPhaseController : MVC
         App.Controller.complexEncounterMenuController.StartComplexEncounter(e.encounter);
     }
 
+    public void ChooseOngoingEffectEncounter(OngoingEffect oe)
+    {
+        App.View.encounterPhaseView.EncounterChosen();
+        oe.StartEncounter();
+    }
+
     public void ChooseDeadInvestigatorEncounter(Location l, Investigator i)
     {
         App.View.encounterPhaseView.EncounterChosen();

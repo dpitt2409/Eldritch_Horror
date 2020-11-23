@@ -21,4 +21,14 @@ public class YigCultist1 : Monster
         testMods[0] = 0;
         testMods[1] = -1;
     }
+
+    public override void Defeated()
+    {
+
+    }
+
+    public override void Spawned()
+    {
+
+    }
 }

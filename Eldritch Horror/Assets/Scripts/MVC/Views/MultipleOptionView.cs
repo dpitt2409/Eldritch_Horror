@@ -7,6 +7,16 @@ public class MultipleOptionView : MVC
 {
     [SerializeField]
     private GameObject monsterOption;
+    [SerializeField]
+    private GameObject investigatorOption;
+    [SerializeField]
+    private GameObject statOption;
+    [SerializeField]
+    private GameObject ancientOneReckoningOption;
+    [SerializeField]
+    private GameObject ongoingEffectReckoningOption;
+    [SerializeField]
+    private GameObject investigatorReckoningOption;
 
     private GameObject multipleOptionMenu;
     private Text menuTitle;
@@ -102,6 +112,61 @@ public class MultipleOptionView : MVC
                 // Set onclick
                 int copy = i;
                 go.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.multipleOptionController.SelectOption(copy); });
+            }
+
+            if (o.objectType == MultipleOptionType.Investigator)
+            {
+                GameObject go = Instantiate(investigatorOption, optionsList.transform);
+                Investigator inv = o.investigator;
+                go.GetComponent<Image>().sprite = inv.investigatorPortrait;
+                go.GetComponentInChildren<Text>().text = inv.investigatorName;
+
+                // Set onclick
+                int copy = i;
+                go.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.multipleOptionController.SelectOption(copy); });
+            }
+            if (o.objectType == MultipleOptionType.Stat)
+            {
+                GameObject go = Instantiate(statOption, optionsList.transform);
+                TestStat stat = o.stat;
+                go.GetComponent<Image>().sprite = App.Model.spriteModel.GetTestStatSprite(stat);
+                go.GetComponentInChildren<Text>().text = "" + stat;
+
+                // Set onclick
+                int copy = i;
+                go.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.multipleOptionController.SelectOption(copy); });
+            }
+            if (o.objectType == MultipleOptionType.Reckoning)
+            {
+                ReckoningEvent re = o.reckoning;
+                if (re.source == ReckoningSource.AncientOne)
+                {
+                    GameObject go = Instantiate(ancientOneReckoningOption, optionsList.transform);
+                    go.GetComponent<Image>().sprite = re.icon;
+                    go.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = re.title;
+                    go.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = re.text;
+                    int copy = i;
+                    go.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.multipleOptionController.SelectOption(copy); });
+                }
+                if (re.source == ReckoningSource.Ongoing)
+                {
+                    GameObject go = Instantiate(ongoingEffectReckoningOption, optionsList.transform);
+                    go.GetComponent<Image>().sprite = re.icon;
+                    go.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = re.title;
+                    go.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = re.text;
+                    int copy = i;
+                    go.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.multipleOptionController.SelectOption(copy); });
+                }
+                if (re.source == ReckoningSource.Investigator)
+                {
+                    GameObject go = Instantiate(investigatorReckoningOption, optionsList.transform);
+                    go.GetComponent<Image>().sprite = re.icon;
+                    go.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = re.title;
+                    go.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = re.text;
+                    go.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = re.investigator.investigatorPortrait;
+                    int copy = i;
+                    go.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.multipleOptionController.SelectOption(copy); });
+                }
             }
         }
     }

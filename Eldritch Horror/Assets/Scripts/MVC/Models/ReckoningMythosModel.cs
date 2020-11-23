@@ -16,10 +16,14 @@ public class ReckoningMythosModel : MVC
 
     public ReckoningCallBack currentReckoningNextButtonCallBack;
 
+    public int totalMonsterReckonings = 0;
+    public int totalAncientOneReckonings = 0;
+    public int totalOngoingEffectReckonings = 0;
+    public int totalInvestigatorReckonings = 0;
+
     public void StartReckoning()
     {
         reckoningEvents = new List<ReckoningEvent>();
-        App.View.ReckoningMythosView.StartReckoning();
     }
 
     public void SortReckonings()
@@ -57,8 +61,15 @@ public class ReckoningMythosModel : MVC
 
         events = allEvents;
 
+        totalMonsterReckonings = monsterReckonings.Count;
+        totalAncientOneReckonings = ancientOneReckonings.Count;
+        totalOngoingEffectReckonings = ongoingReckonings.Count;
+        totalInvestigatorReckonings = investigatorReckonings.Count;
+
         activeList = 0;
         currentEvents = events[activeList];
+
+        App.View.ReckoningMythosView.StartReckoning();
     }
 
     public void AddReckoningEvent(ReckoningEvent e)

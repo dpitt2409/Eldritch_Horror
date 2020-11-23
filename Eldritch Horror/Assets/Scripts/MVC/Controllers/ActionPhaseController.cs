@@ -20,7 +20,6 @@ public class ActionPhaseController : MVC
         {
             App.View.actionPhaseView.ActionAddedToList(text, callback);
         }
-
     }
 
     public void PerformBasicAction(BasicActions action)
@@ -44,5 +43,10 @@ public class ActionPhaseController : MVC
     {
         App.View.actionPhaseView.ActionSelected();
         App.Model.actionPhaseModel.EndTurn();
+    }
+
+    public void TerminateTurn() // Used when Investigators die/become delayed during the action phase
+    {
+        App.Model.actionPhaseModel.TerminateTurn();
     }
 }

@@ -66,4 +66,18 @@ public class OpenMenuController : MVC
             App.Controller.testController.MaximizeTest();
         }
     }
+
+    public void OpenPopup(GameObject popup)
+    {
+        if (App.Model.openMenuModel.openPopup != null)
+        {
+            App.Model.openMenuModel.openPopup.SetActive(false);
+        }
+        App.Model.openMenuModel.OpenPopup(popup);
+    }
+
+    public void ClosePopup()
+    {
+        App.Model.openMenuModel.ClosePopup();
+    }
 }

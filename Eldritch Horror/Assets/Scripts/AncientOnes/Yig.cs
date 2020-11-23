@@ -57,4 +57,20 @@ public class Yig : AncientOne
 
         return researchDecks;
     }
+
+    public override void EnterPlay()
+    {
+
+    }
+
+    public override void LeavePlay()
+    {
+
+    }
+
+    // Only called when all mysteries are solved and the Ancient One has already flipped
+    public override void AllMysteriesSolved()
+    {
+
+    }
 }

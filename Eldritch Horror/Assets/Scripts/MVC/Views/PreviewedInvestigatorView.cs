@@ -25,6 +25,8 @@ public class PreviewedInvestigatorView : MVC
     [SerializeField]
     private GameObject assetPossession;
     [SerializeField]
+    private GameObject spellPossession;
+    [SerializeField]
     private GameObject conditionPossession;
 
     private GameObject expandInvestigatorListButton;
@@ -107,9 +109,50 @@ public class PreviewedInvestigatorView : MVC
             GameObject assetGo = Instantiate(assetPossession, itemsParent.transform);
             assetGo.GetComponent<Image>().sprite = a.assetPortrait;
             assetGo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = a.assetName;
-            assetGo.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "" + a.type;
+            string assetType = "" + a.type;
+            if (a.magical || a.subTypes.Length > 0)
+            {
+                assetType += " - ";
+                if (a.magical)
+                    assetType += "Magical ";
+                foreach (AssetSubType subType in a.subTypes)
+                    assetType += "" + subType + " ";
+            }
+            assetGo.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = assetType;
             assetGo.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = "" + a.text;
-            assetGo.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = "" + a.cost;
+            if (a.artifact)
+            {
+                assetGo.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
+            }
+            else
+            {
+                assetGo.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = "" + a.cost;
+            }
+            if (a.reckoningText == "")
+            {
+                assetGo.transform.GetChild(0).GetChild(4).gameObject.SetActive(false);
+            }
+            else
+            {
+                assetGo.transform.GetChild(0).GetChild(4).GetChild(0).GetComponent<Text>().text = a.reckoningText;
+            }
+        }
+        foreach (Spell s in preview.spells)
+        {
+            GameObject spellGo = Instantiate(spellPossession, itemsParent.transform);
+            spellGo.GetComponent<Image>().sprite = s.spellPortrait;
+            spellGo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = s.spellName;
+            spellGo.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "" + s.type;
+            spellGo.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = "" + s.text;
+            if (s.reckoningText == "")
+            {
+                spellGo.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
+            }
+            else
+            {
+                spellGo.transform.GetChild(0).GetChild(3).gameObject.SetActive(true);
+                spellGo.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = s.reckoningText;
+            }
         }
 
         foreach (Transform child in conditionsParent.transform)

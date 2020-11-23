@@ -66,6 +66,8 @@
     <Compile Include="Assets\Scripts\AncientOnes\AncientOne.cs" />
     <Compile Include="Assets\Scripts\AncientOnes\Cthulu.cs" />
     <Compile Include="Assets\Scripts\AncientOnes\Yig.cs" />
+    <Compile Include="Assets\Scripts\Artifacts\Artifact.cs" />
+    <Compile Include="Assets\Scripts\Artifacts\TwinSceptersArtifact.cs" />
     <Compile Include="Assets\Scripts\Assets\ArcaneScholarAsset.cs" />
     <Compile Include="Assets\Scripts\Assets\Asset.cs" />
     <Compile Include="Assets\Scripts\Assets\AxeAsset.cs" />
@@ -124,11 +126,13 @@
     <Compile Include="Assets\Scripts\MVC\Controllers\AcquireController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\ActionPhaseController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\AdvanceOmenMythosController.cs" />
+    <Compile Include="Assets\Scripts\MVC\Controllers\AncientOneController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\CombatController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\ComplexEncounterMenuController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\ConditionEffectController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\EncounterMenuController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\EncounterPhaseController.cs" />
+    <Compile Include="Assets\Scripts\MVC\Controllers\EndGameController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\EventController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\InvestigatorController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\LocationController.cs" />
@@ -151,6 +155,7 @@
     <Compile Include="Assets\Scripts\MVC\Controllers\SingleOptionController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\SpawnCluesMythosController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\SpawnGatesMythosController.cs" />
+    <Compile Include="Assets\Scripts\MVC\Controllers\SpellEffectController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\TestController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\TradeController.cs" />
     <Compile Include="Assets\Scripts\MVC\Controllers\TravelController.cs" />
@@ -160,6 +165,7 @@
     <Compile Include="Assets\Scripts\MVC\Models\ActionPhaseModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\AdvanceOmenMythosModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\AncientOneModel.cs" />
+    <Compile Include="Assets\Scripts\MVC\Models\ArtifactModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\AssetModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\ClueModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\CombatModel.cs" />
@@ -195,6 +201,8 @@
     <Compile Include="Assets\Scripts\MVC\Models\SingleOptionModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\SpawnCluesMythosModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\SpawnGatesMythosModel.cs" />
+    <Compile Include="Assets\Scripts\MVC\Models\SpellEffectModel.cs" />
+    <Compile Include="Assets\Scripts\MVC\Models\SpellModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\SpriteModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\TestModel.cs" />
     <Compile Include="Assets\Scripts\MVC\Models\TradeModel.cs" />
@@ -210,6 +218,7 @@
     <Compile Include="Assets\Scripts\MVC\Views\DoomView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\EncounterMenuView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\EncounterPhaseView.cs" />
+    <Compile Include="Assets\Scripts\MVC\Views\EndGameView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\InvestigatorView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\LocationView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\MinimizeView.cs" />
@@ -220,7 +229,6 @@
     <Compile Include="Assets\Scripts\MVC\Views\MythosView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\OmenView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\OngoingEffectView.cs" />
-    <Compile Include="Assets\Scripts\MVC\Views\OpenMenuView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\PrepareView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\PreviewedInvestigatorView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\ReckoningMythosView.cs" />
@@ -230,6 +238,7 @@
     <Compile Include="Assets\Scripts\MVC\Views\SingleOptionView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\SpawnCluesMythosView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\SpawnGatesMythosView.cs" />
+    <Compile Include="Assets\Scripts\MVC\Views\SpellEffectView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\TestView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\TradeView.cs" />
     <Compile Include="Assets\Scripts\MVC\Views\TravelView.cs" />
@@ -237,8 +246,9 @@
     <Compile Include="Assets\Scripts\Monsters\Cultists\CthuluCultist2.cs" />
     <Compile Include="Assets\Scripts\Monsters\Cultists\YigCultist1.cs" />
     <Compile Include="Assets\Scripts\Monsters\Cultists\YigCultist2.cs" />
+    <Compile Include="Assets\Scripts\Monsters\Epic Monsters\CthuluEpicMonster.cs" />
     <Compile Include="Assets\Scripts\Monsters\Monster.cs" />
-    <Compile Include="Assets\Scripts\Monsters\Standard Monsters\GhoulMonster.cs" />
+    <Compile Include="Assets\Scripts\Monsters\Normal Monsters\GhoulMonster.cs" />
     <Compile Include="Assets\Scripts\Mysteries\Cthulu\CthuluMystery1.cs" />
     <Compile Include="Assets\Scripts\Mysteries\Mystery.cs" />
     <Compile Include="Assets\Scripts\Mysteries\Yig\YigMystery1.cs" />
@@ -246,6 +256,8 @@
     <Compile Include="Assets\Scripts\Mythos\Mythos.cs" />
     <Compile Include="Assets\Scripts\Mythos\OngoingEffect.cs" />
     <Compile Include="Assets\Scripts\Mythos\Yellow\EverythingIsUnderControlMythos.cs" />
+    <Compile Include="Assets\Scripts\Spells\Ritual\FeedTheMindSpell.cs" />
+    <Compile Include="Assets\Scripts\Spells\Spell.cs" />
     <Compile Include="Assets\Scripts\Structs.cs" />
     <Compile Include="Assets\Scripts\Tooltips\FollowMousePosition.cs" />
     <Compile Include="Assets\Scripts\Tooltips\Tooltip.cs" />

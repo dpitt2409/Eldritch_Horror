@@ -126,5 +126,14 @@ public enum MultipleOptionType
 {
     Monster,
     Reckoning,
-    Asset
+    Asset,
+    Investigator,
+    Stat
+}
+
+public enum SpellType
+{
+    Ritual,
+    Incantation,
+    Glamour
 }

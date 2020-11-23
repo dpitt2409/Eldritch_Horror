@@ -26,6 +26,10 @@ public abstract class Monster
 
     public bool epic = false;
 
+    public abstract void Spawned();
+
+    public abstract void Defeated();
+
     public virtual void StartCombat() { GameManager.SingleInstance.App.Controller.combatController.StartTest1(); }
 
     public virtual void FinishTest1(int numSuccesses) { GameManager.SingleInstance.App.Controller.combatController.StartTest2(); }

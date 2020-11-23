@@ -11,17 +11,34 @@ public class TravelController : MVC
 
     public void TravelByPath(Connection c)
     {
+        App.Model.travelModel.SetPath(c);
         Investigator i = App.Model.investigatorModel.activeInvestigator;
         // Hide the travel menu
         App.View.travelView.PathSelected();
         // Move the Investigator
-        App.Controller.locationController.MoveInvestigator(i, c.destination); // technically should fire travel event here?
+        App.Controller.locationController.MoveInvestigator(i, c.destination);
+
+        App.Controller.queueController.CreateCallBackQueue(TravelEventFinished); // Create Queue
+        App.Model.eventModel.TravelEvent(c.destination); // Populate Queue
+        App.Controller.queueController.StartCallBackQueue(); // Start Queue
+    }
+
+    public void TravelEventFinished()
+    {
+        if (App.Model.actionPhaseModel.terminateTurn)
+        {
+            App.Controller.actionPhaseController.TerminateTurn();
+            return;
+        }
+
+        Investigator i = App.Model.investigatorModel.activeInvestigator;
+        Connection c = App.Model.travelModel.currentPath;
         // Either open the ticket menu or end the action
         bool canUseShipTicket = false;
         bool canUseTrainTicket = false;
         if (c.type != ConnectionType.Uncharted)
         {
-            foreach(Connection con in c.destination.connections)
+            foreach (Connection con in c.destination.connections)
             {
                 if (con.type == ConnectionType.Ship && i.shipTickets > 0)
                     canUseShipTicket = true;
@@ -35,10 +52,8 @@ public class TravelController : MVC
         }
         else
         {
-            App.Controller.queueController.CreateCallBackQueue(FinishAction); // Create Queue
-            App.Model.eventModel.TravelEvent(); // Populate Queue
-            App.Controller.queueController.StartCallBackQueue(); // Start Queue
-        }        
+            FinishAction();
+        }
     }
 
     public void CancelAction()
@@ -57,8 +72,6 @@ public class TravelController : MVC
         Investigator i = App.Model.investigatorModel.activeInvestigator;
         // Hide the ticket menu
         App.View.travelView.TicketUsed();
-        // Move the Investigator
-        App.Controller.locationController.MoveInvestigator(i, c.destination);
         // Spend the ticket
         // Spend Ticket Event ?
         if (c.type == ConnectionType.Ship)
@@ -66,22 +79,30 @@ public class TravelController : MVC
         if (c.type == ConnectionType.Train)
             i.SpendTrainTicket();
 
+        // Move the Investigator
+        App.Controller.locationController.MoveInvestigator(i, c.destination);
+
         App.Controller.queueController.CreateCallBackQueue(FinishAction); // Create Queue
-        App.Model.eventModel.TravelEvent(); // Populate Queue
+        App.Model.eventModel.TravelEvent(c.destination); // Populate Queue
         App.Controller.queueController.StartCallBackQueue(); // Start Queue
     }
 
     public void TicketNotUsed()
     {
         App.View.travelView.TicketUsed();
-        App.Controller.queueController.CreateCallBackQueue(FinishAction); // Create Queue
-        App.Model.eventModel.TravelEvent(); // Populate Queue
-        App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        FinishAction();
     }
     
     public void FinishAction()
     {
-        App.Model.investigatorModel.activeInvestigator.ActionPerformed("" + BasicActions.Travel);
-        App.Controller.actionPhaseController.ActionPerformed();
+        if (App.Model.actionPhaseModel.terminateTurn)
+        {
+            App.Controller.actionPhaseController.TerminateTurn();
+        }
+        else
+        {
+            App.Model.investigatorModel.activeInvestigator.ActionPerformed("" + BasicActions.Travel);
+            App.Controller.actionPhaseController.ActionPerformed();
+        }
     }
 }

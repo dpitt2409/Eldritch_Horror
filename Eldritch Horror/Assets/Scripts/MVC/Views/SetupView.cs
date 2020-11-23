@@ -14,6 +14,9 @@ public class SetupView : MVC
     [SerializeField]
     private GameObject startingAsset;
 
+    [SerializeField]
+    private GameObject startingSpell;
+
     private GameObject setupMenu;
     private GameObject investigatorScreen;
     private GameObject ancientOneScreen;
@@ -241,6 +244,27 @@ public class SetupView : MVC
                     assetGo.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
                 }
             }
+            if (item.type == StartingItemType.Spell)
+            {
+                Spell s = App.Model.spellModel.ReferenceSpellByName(item.val);
+                if (s != null)
+                {
+                    GameObject spellGo = Instantiate(startingSpell, investigatorPreviewStartingEquipmentParent.transform);
+                    spellGo.GetComponent<Image>().sprite = s.spellPortrait;
+                    spellGo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = s.spellName;
+                    spellGo.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "" + s.type;
+                    spellGo.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = "" + s.text;
+                    if (s.reckoningText == "")
+                    {
+                        spellGo.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        spellGo.transform.GetChild(0).GetChild(3).gameObject.SetActive(true);
+                        spellGo.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = s.reckoningText;
+                    }
+                }
+            }
         }
     }
 
@@ -317,18 +341,17 @@ public class SetupView : MVC
         for (int i = 0; i < ao.ancientOneTexts.Length; i++)
         {
             GameObject go = Instantiate(ancientOneTextBlock, ancientOneTextsParent.transform);
-            go.transform.GetChild(0).GetComponent<Text>().text = ao.ancientOneTexts[i];
+            go.GetComponent<Text>().text = ao.ancientOneTexts[i];
             if (i == ao.frontReckoningTextIndex)
             {
-                go.transform.GetChild(1).gameObject.SetActive(true);
+                go.transform.GetChild(0).gameObject.SetActive(true);
             }
             else
             {
-                go.transform.GetChild(1).gameObject.SetActive(false);
+                go.transform.GetChild(0).gameObject.SetActive(false);
             }
         }
 
-        //also update the backside
         if (ao.awakenText == "")
         {
             awakenEvent.SetActive(false);
@@ -352,14 +375,14 @@ public class SetupView : MVC
         for (int i = 0; i < ao.flipTexts.Length; i++)
         {
             GameObject go = Instantiate(ancientOneTextBlock, flipInfoTextParent.transform);
-            go.transform.GetChild(0).GetComponent<Text>().text = ao.flipTexts[i];
+            go.GetComponent<Text>().text = ao.flipTexts[i];
             if (i == ao.backReckoningTextIndex)
             {
-                go.transform.GetChild(1).gameObject.SetActive(true);
+                go.transform.GetChild(0).gameObject.SetActive(true);
             }
             else
             {
-                go.transform.GetChild(1).gameObject.SetActive(false);
+                go.transform.GetChild(0).gameObject.SetActive(false);
             }
         }
 

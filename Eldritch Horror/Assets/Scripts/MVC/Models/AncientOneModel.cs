@@ -9,6 +9,7 @@ public class AncientOneModel : MVC
     public void SetAncientOne(AncientOne ao)
     {
         ancientOne = ao;
+        ao.EnterPlay();
         App.View.ancientOneView.AncientOneSet();
     }
 }

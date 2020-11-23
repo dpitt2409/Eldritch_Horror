@@ -10,4 +10,12 @@ public abstract class OngoingEffect
 
     public string location;
     public int eldritchTokens;
+
+    public abstract void Spawned();
+
+    public abstract void Resolved();
+
+    public virtual bool CheckEncounter() { return false; }
+
+    public virtual void StartEncounter() { return; }
 }

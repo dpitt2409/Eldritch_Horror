@@ -11,8 +11,14 @@ public class ReckoningMythosView : MVC
     private GameObject nextButton;
     private GameObject minimizeButton;
 
+    private Text monsterReckonings;
+    private Text ancientOneReckonings;
+    private Text ongoingEffectReckonings;
+    private Text investigatorReckonings;
+
     private Text currentReckoningTitle;
     private Text currentReckoningText;
+    private Text currentReckoningCounter;
     private GameObject currentReckoningNextButton;
 
     void Start()
@@ -23,12 +29,19 @@ public class ReckoningMythosView : MVC
         nextButton = reckoningMenu.transform.GetChild(2).gameObject;
         minimizeButton = reckoningMenu.transform.GetChild(3).gameObject;
 
+        monsterReckonings = startReckoningScreen.transform.GetChild(0).GetComponent<Text>();
+        ancientOneReckonings = startReckoningScreen.transform.GetChild(1).GetComponent<Text>();
+        ongoingEffectReckonings = startReckoningScreen.transform.GetChild(2).GetComponent<Text>();
+        investigatorReckonings = startReckoningScreen.transform.GetChild(3).GetComponent<Text>();
+
         currentReckoningTitle = currentReckoningScren.transform.GetChild(0).GetComponent<Text>();
         currentReckoningText = currentReckoningScren.transform.GetChild(1).GetComponent<Text>();
-        currentReckoningNextButton = currentReckoningScren.transform.GetChild(2).gameObject;
+        currentReckoningCounter = currentReckoningScren.transform.GetChild(2).GetComponent<Text>();
+        currentReckoningNextButton = currentReckoningScren.transform.GetChild(3).gameObject;
 
         nextButton.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.reckoningMythosController.Next(); });
         minimizeButton.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.openMenuController.MinimizeOpenMenu(); });
+        currentReckoningNextButton.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.reckoningMythosController.CurrentReckoningNextButton(); });
 
         reckoningMenu.SetActive(false);
     }
@@ -40,6 +53,12 @@ public class ReckoningMythosView : MVC
         startReckoningScreen.SetActive(true);
         currentReckoningScren.SetActive(false);
         nextButton.SetActive(true);
+
+        List<ReckoningEvent>[] events = App.Model.reckoningMythosModel.events;
+        monsterReckonings.text = "" + events[0].Count;
+        ancientOneReckonings.text = "" + events[1].Count;
+        ongoingEffectReckonings.text = "" + events[2].Count;
+        investigatorReckonings.text = "" + events[3].Count;
     }
 
     public void NextReckoningEvent()
@@ -51,15 +70,47 @@ public class ReckoningMythosView : MVC
         currentReckoningNextButton.SetActive(false);
         nextButton.SetActive(false);
 
-        ReckoningEvent re = App.Model.reckoningMythosModel.currentEvents[App.Model.reckoningMythosModel.currentEvent];
+
+        int currentList = App.Model.reckoningMythosModel.activeList;
+        string counterText = "";
+        int total = -1;
+        if (currentList == 0)
+        {
+            counterText += "Monster ";
+            total = App.Model.reckoningMythosModel.totalMonsterReckonings;
+        }
+        else if (currentList == 1)
+        {
+            counterText += "Ancient One ";
+            total = App.Model.reckoningMythosModel.totalAncientOneReckonings;
+        }
+        else if (currentList == 2)
+        {
+            counterText += "Ongoing Effect ";
+            total = App.Model.reckoningMythosModel.totalOngoingEffectReckonings;
+        }
+        else if (currentList == 3)
+        {
+            counterText += "Investigator ";
+            total = App.Model.reckoningMythosModel.totalInvestigatorReckonings;
+        }
+        List<ReckoningEvent> currentEvents = App.Model.reckoningMythosModel.currentEvents;
+        counterText += "Reckoning: " + (total - currentEvents.Count + 1) + " / " + total;
+        currentReckoningCounter.text = counterText;
+
+        ReckoningEvent re = currentEvents[App.Model.reckoningMythosModel.currentEvent];
         currentReckoningTitle.text = re.title;
         currentReckoningText.text = re.text;
+    }
+
+    public void SetReckoningText(string newText)
+    {
+        currentReckoningText.text = newText;
     }
 
     public void EnableCurrentReckoningNextButton()
     {
         currentReckoningNextButton.SetActive(true);
-        currentReckoningNextButton.GetComponent<Button>().onClick.AddListener(delegate { App.Controller.reckoningMythosController.CurrentReckoningNextButton(); });
     }
 
     public void CurrentReckoningNextButton()

@@ -28,7 +28,8 @@ public class NormanWithers : Investigator
         lore = 3;
 
         startingLocation = App.Model.locationModel.FindLocationByName("Arkham");
-        startingItems = new StartingItem[0];
+        startingItems = new StartingItem[1];
+        startingItems[0] = new StartingItem(StartingItemType.Spell, "Feed the Mind");
     }
 
     public override void JoinGame()
@@ -68,7 +69,7 @@ public class NormanWithersHealthDeathEncounter : Encounter
             // Retreat doom by 1
             GameManager.SingleInstance.App.Model.doomModel.RetreatDoom(1);
             GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(DoomRetreated); // Start Queue
-            GameManager.SingleInstance.App.Model.eventModel.DoomAdvanced(); // Populate Queue
+            GameManager.SingleInstance.App.Model.eventModel.DoomRetreatedEvent(1); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
         else
@@ -102,7 +103,7 @@ public class NormanWithersSanityDeathEncounter : Encounter
             // Retreat doom by 1
             GameManager.SingleInstance.App.Model.doomModel.RetreatDoom(1);
             GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(DoomRetreated); // Create Queue
-            GameManager.SingleInstance.App.Model.eventModel.DoomAdvanced(); // Populate Queue
+            GameManager.SingleInstance.App.Model.eventModel.DoomRetreatedEvent(1); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
         else

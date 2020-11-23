@@ -23,6 +23,8 @@ public class FracturedRealityMythos : Mythos
 
 public class FracturedRealityRumor : OngoingEffect
 {
+    private bool activeOtherWorldlyEncounter = false;
+
     public FracturedRealityRumor()
     {
         effectTitle = "Fractured Reality";
@@ -30,6 +32,80 @@ public class FracturedRealityRumor : OngoingEffect
         reckoningText = "Discard 1 Eldritch token from this card.";
 
         location = "Space 2";
-        eldritchTokens = 4;
+        eldritchTokens = 1;
+    }
+
+    public override void Spawned()
+    {
+        GameManager.SingleInstance.App.Model.eventModel.newRoundEvent += RoundReset;
+        GameManager.SingleInstance.App.Model.eventModel.reckoningEvent += ReckoningEvent;
+        GameManager.SingleInstance.App.Model.eventModel.otherworldlyCloseGateEvent += CloseGateEvent;
+    }
+
+    public override void Resolved()
+    {
+        GameManager.SingleInstance.App.Model.eventModel.newRoundEvent -= RoundReset;
+        GameManager.SingleInstance.App.Model.eventModel.reckoningEvent -= ReckoningEvent;
+        GameManager.SingleInstance.App.Model.eventModel.otherworldlyCloseGateEvent -= CloseGateEvent;
+    }
+
+    public void RoundReset()
+    {
+        activeOtherWorldlyEncounter = false;
+    }
+
+    public void ReckoningEvent()
+    {
+        string title = effectTitle + " Rumor Reckoning";
+        ReckoningEvent re = new ReckoningEvent(title, reckoningText, StartReckoning, ReckoningSource.Ongoing, GameManager.SingleInstance.App.Model.spriteModel.rumorSprite);
+        GameManager.SingleInstance.App.Model.reckoningMythosModel.AddReckoningEvent(re);
+    }
+
+    public void StartReckoning()
+    {
+        eldritchTokens--;
+        if (eldritchTokens == 0)
+        {
+            int numGates = GameManager.SingleInstance.App.Model.gateModel.activeGates.Count;
+
+            string finishedText = "Advance Doom by 1 for each Gate on the game board. (" + numGates + ") \n\r Then solve this Rumor.";
+            GameManager.SingleInstance.App.Controller.reckoningMythosController.SetReckoningText(finishedText);
+
+            GameManager.SingleInstance.App.Model.doomModel.AdvanceDoom(numGates);
+            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(DoomAdvanced); // Create Queue
+            GameManager.SingleInstance.App.Model.eventModel.DoomAdvancedEvent(numGates); // Populate Queue
+            GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        }
+        else
+        {
+            GameManager.SingleInstance.App.Controller.ongoingEffectController.OngoingEffectUpdated(this);
+            GameManager.SingleInstance.App.Controller.reckoningMythosController.FinishReckoning();
+        }
+    }
+
+    public void DoomAdvanced()
+    {
+        GameManager.SingleInstance.App.Controller.ongoingEffectController.ResolveOngoingEffect(this);
+        GameManager.SingleInstance.App.Controller.reckoningMythosController.FinishReckoning();
+    }
+
+    public override bool CheckEncounter()
+    {
+        return true;
+    }
+
+    public override void StartEncounter()
+    {
+        activeOtherWorldlyEncounter = true;
+        GameManager.SingleInstance.App.Controller.complexEncounterMenuController.StartComplexEncounter(GameManager.SingleInstance.App.Model.encounterModel.DrawOtherWorldlyEncounter());
+    }
+
+    public void CloseGateEvent(Location l)
+    {
+        if (activeOtherWorldlyEncounter)
+        {
+            GameManager.SingleInstance.App.Model.gateModel.SetClosingGate(null);
+            GameManager.SingleInstance.App.Controller.ongoingEffectController.ResolveOngoingEffect(this);
+        }
     }
 }

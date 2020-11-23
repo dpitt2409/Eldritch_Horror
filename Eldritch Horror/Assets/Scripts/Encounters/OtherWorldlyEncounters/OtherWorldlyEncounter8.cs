@@ -39,12 +39,12 @@ public class OtherWorldlyEncounter8 : ComplexEncounter
         {
             if (passed)
             {
-                // Close Gate
+                // Fire 'Close this Gate' Event
                 Location l = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator.currentLocation;
-                GameManager.SingleInstance.App.Controller.locationController.CloseGate(l);
+                GameManager.SingleInstance.App.Model.gateModel.SetClosingGate(l);
 
-                GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(GateClosed); // Create Queue
-                GameManager.SingleInstance.App.Model.eventModel.CloseGateEvent(l); // Populate Queue
+                GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(CloseThisGateEvent); // Create Queue
+                GameManager.SingleInstance.App.Model.eventModel.OtherworldlyCloseGateEvent(l); // Populate Queue
                 GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
             }
             else
@@ -65,6 +65,24 @@ public class OtherWorldlyEncounter8 : ComplexEncounter
                 // Gain an Amnesia Condition
                 GameManager.SingleInstance.App.Controller.complexEncounterMenuController.CompleteEncounter();
             }
+        }
+    }
+
+    public void CloseThisGateEvent()
+    {
+        // Close Gate
+        Location l = GameManager.SingleInstance.App.Model.gateModel.currentClosingGate;
+        if (l != null)
+        {
+            GameManager.SingleInstance.App.Controller.locationController.CloseGate(l);
+
+            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(GateClosed); // Create Queue
+            GameManager.SingleInstance.App.Model.eventModel.CloseGateEvent(l); // Populate Queue
+            GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        }
+        else
+        {
+            GameManager.SingleInstance.App.Controller.complexEncounterMenuController.CompleteEncounter();
         }
     }
 

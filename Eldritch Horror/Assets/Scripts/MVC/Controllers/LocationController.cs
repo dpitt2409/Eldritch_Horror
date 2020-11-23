@@ -14,6 +14,11 @@ public class LocationController : MVC
         App.View.locationView.DisableMap();
     }
 
+    public void AncientOneFlipped()
+    {
+        App.View.locationView.AncientOneFlipped();
+    }
+
     public void EnterStartingLocation(Investigator i, Location l)
     {
         l.InvestigatorEnteredLocation(i);
@@ -104,6 +109,18 @@ public class LocationController : MVC
     public void DeadInvestigatorTokenClaimed(Investigator i, Location l)
     {
         l.DeadInvestigatorLeftLocation(i);
+        App.View.locationView.LocationUpdated(l);
+    }
+
+    public void SpawnEldritchTokenOnLocation(EldritchToken et, Location l)
+    {
+        l.EldritchTokenEnteredLocation(et);
+        App.View.locationView.LocationUpdated(l);
+    }
+
+    public void EldritchTokenRemoved(EldritchToken et, Location l)
+    {
+        l.EldritchTokenLeftLocation(et);
         App.View.locationView.LocationUpdated(l);
     }
 

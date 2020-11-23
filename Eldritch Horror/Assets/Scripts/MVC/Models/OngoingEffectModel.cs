@@ -13,13 +13,20 @@ public class OngoingEffectModel : MVC
 
     public void NewOngoingEffect(OngoingEffect oe)
     {
+        foreach (OngoingEffect o in activeOngoingEffects)
+        {
+            if (o.effectTitle == oe.effectTitle)
+                return;
+        }
         activeOngoingEffects.Add(oe);
+        oe.Spawned();
         App.View.ongoingEffectView.OngoingEffectsChanged();
     }
 
     public void OngoingEffectFinished(OngoingEffect oe)
     {
         activeOngoingEffects.Remove(oe);
+        oe.Resolved();
         App.View.ongoingEffectView.OngoingEffectsChanged();
     }
 }
