@@ -7,7 +7,7 @@ public class AxeAsset : Asset
     public AxeAsset()
     {
         assetName = "Axe";
-        assetPortrait = GameManager.SingleInstance.App.Model.spriteModel.axeSprite;
+        assetPortrait = GameManager.SingleInstance.App.Model.assetSpritesModel.axeSprite;
         text = "Gain +2 Strength during Combat Encounters.  You may spend 2 Sanity to reroll any number of dice when resolving a Strength test during a Combat Encounter.";
         type = AssetType.Item;
         subTypes = new AssetSubType[1];

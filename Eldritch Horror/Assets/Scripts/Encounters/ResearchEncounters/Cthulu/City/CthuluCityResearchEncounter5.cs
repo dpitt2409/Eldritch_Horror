@@ -16,8 +16,7 @@ public class CthuluCityResearchEncounter5 : Encounter
 
     public override void FinishEncounter(bool passed)
     {
-
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
+        Investigator active = GameManager.SingleInstance.App.Model.encounterMenuModel.currentInvestigator;
         if (passed)
         {
             // Gain this Clue and 1 additional Clue
@@ -45,7 +44,7 @@ public class CthuluCityResearchEncounter5 : Encounter
     public void ResearchClueClaimed()
     {
         Clue c = GameManager.SingleInstance.App.Model.clueModel.DrawClue();
-        GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator.GainClue(c);
+        GameManager.SingleInstance.App.Model.encounterMenuModel.currentInvestigator.GainClue(c);
 
         GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(FinishEncounter); // Create Queue
         GameManager.SingleInstance.App.Model.eventModel.ClueGainedEvent(); // Populate Queue
@@ -54,7 +53,7 @@ public class CthuluCityResearchEncounter5 : Encounter
 
     public void LoseSanity()
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
+        Investigator active = GameManager.SingleInstance.App.Model.encounterMenuModel.currentInvestigator;
         active.LoseSanity(active.GetIncomingDamage());
         active.SetIncomingDamage(0);
 

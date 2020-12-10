@@ -7,7 +7,7 @@ public class Yig : AncientOne
     public Yig()
     {
         ancientOneName = "Yig";
-        portrait = GameManager.SingleInstance.App.Model.spriteModel.yigSprite;
+        portrait = GameManager.SingleInstance.App.Model.ancientOneSpritesModel.yigSprite;
         title = "The Father of Serpents";
         doom = 10;
         numMysteries = 3;
@@ -60,12 +60,12 @@ public class Yig : AncientOne
 
     public override void EnterPlay()
     {
-
+        base.EnterPlay();
     }
 
     public override void LeavePlay()
     {
-
+        base.LeavePlay();
     }
 
     // Only called when all mysteries are solved and the Ancient One has already flipped

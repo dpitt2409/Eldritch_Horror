@@ -6,8 +6,6 @@ public class ControllerContainer : MVC
 {
     public SetupController setupController;
 
-    public EventController eventController;
-
     public InvestigatorController investigatorController;
 
     public AncientOneController ancientOneController;
@@ -75,4 +73,8 @@ public class ControllerContainer : MVC
     public SpellEffectController spellEffectController;
 
     public EndGameController endGameController;
+
+    public DeadInvestigatorMenuController deadInvestigatorMenuController;
+
+    public AncientOneFlippedMenuController ancientOneFlippedMenuController;
 }

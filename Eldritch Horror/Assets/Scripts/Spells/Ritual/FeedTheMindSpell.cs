@@ -11,7 +11,7 @@ public class FeedTheMindSpell : Spell
     public FeedTheMindSpell(int index)
     {
         spellName = "Feed the Mind";
-        spellPortrait = GameManager.SingleInstance.App.Model.spriteModel.feedTheMindSpellSprite;
+        spellPortrait = GameManager.SingleInstance.App.Model.spellSpritesModel.feedTheMindSpellSprite;
         text = "Action: Test Lore -1 \n\r If you pass, choose an investigator on your space to improve 1 skill of his choice. \n\r Then flip this card.";
         type = SpellType.Ritual;
         reckoningText = "";
@@ -39,15 +39,14 @@ public class FeedTheMindSpell : Spell
 
     public void SpellAction()
     {
-        GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator.ActionPerformed("Feed the Mind Spell Action");
+        owner.ActionPerformed("Feed the Mind Spell Action");
         GameManager.SingleInstance.App.Controller.spellEffectController.StartSpellEffect(this, SpellActionComplete);
-        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Lore, -1, TestType.Test, LoreTested);
+        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Lore, -1, TestType.Test, owner, LoreTested);
     }
 
     public void LoreTested(List<int> results)
     {
         currentResults = new List<int>(results);
-
         currentSuccess = 0;
         foreach (int num in currentResults)
         {
@@ -59,8 +58,21 @@ public class FeedTheMindSpell : Spell
 
         if (currentSuccess > 0)
         {
-            GameManager.SingleInstance.App.Controller.openMenuController.HideOpenMenu();
             GameManager.SingleInstance.App.Controller.spellEffectController.SetFrontResultText("Pass \n\r Choose an Investigator on your space to improve 1 skill of his choice. \n\r Then flip this card.");
+        }
+        else
+        {
+            GameManager.SingleInstance.App.Controller.spellEffectController.SetFrontResultText("Fail \n\r Flip this card.");
+        }
+        GameManager.SingleInstance.App.Controller.spellEffectController.SpellEffectFinished();
+    }
+
+    // Called after continue button is pressed on front effect
+    public void SpellActionComplete()
+    {
+        if (currentSuccess > 0)
+        {
+            GameManager.SingleInstance.App.Controller.openMenuController.HideOpenMenu();
             // Open multi option menu to select an investigator on owner's location
             List<MultipleOptionMenuObject> options = new List<MultipleOptionMenuObject>();
             foreach (Investigator inv in owner.currentLocation.investigatorsOnLocation)
@@ -71,8 +83,7 @@ public class FeedTheMindSpell : Spell
         }
         else
         {
-            GameManager.SingleInstance.App.Controller.spellEffectController.SetFrontResultText("Fail \n\r Flip this card.");
-            GameManager.SingleInstance.App.Controller.spellEffectController.SpellEffectFinished();
+            Flip();
         }
     }
 
@@ -129,32 +140,38 @@ public class FeedTheMindSpell : Spell
     public void StatImproved()
     {
         improvingInvestigator = null;
-        GameManager.SingleInstance.App.Controller.spellEffectController.SpellEffectFinished();
         GameManager.SingleInstance.App.Controller.openMenuController.EnableOpenMenu();
+        Flip();
     }
 
-    // Called after continue button is pressed on front effect
-    public void SpellActionComplete()
+    public void Flip()
     {
         switch (copyIndex)
         {
             case 2:
-                FlipEffect2();
+                Flip2();
                 break;
             default:
                 break;
         }
     }
 
-    public void FlipEffect2()
+    public void Flip2()
     {
         List<string> options = new List<string>();
         options.Add("0: You were unable to sufficiently focus your mind. You wonder if you simply lack the mental discipline this spell requires. If you did not roll any 4's, discard this card.");
         options.Add("1+: Casting your thoughts into the ether, your mind returns with strange knowledge. You may not entirely be the same person you were before. Lose 1 Sanity.");
         
         if (currentSuccess == 0)
+            GameManager.SingleInstance.App.Controller.spellEffectController.StartFlipEffect(this, options, 0, currentResults, Flip2Effects);
+        else
+            GameManager.SingleInstance.App.Controller.spellEffectController.StartFlipEffect(this, options, 1, currentResults, Flip2Effects);
+    }
+
+    public void Flip2Effects()
+    {
+        if (currentSuccess == 0)
         {
-            GameManager.SingleInstance.App.Controller.spellEffectController.StartFlipEffect(this, options, 0, FlipEffectComplete);
             bool rolled4 = false;
             foreach (int num in currentResults)
             {
@@ -163,44 +180,38 @@ public class FeedTheMindSpell : Spell
             }
             if (rolled4)
             {
-                GameManager.SingleInstance.App.Controller.spellEffectController.SpellEffectFinished();
+                FlipEffectComplete();
             }
             else
             {
-                GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(SpellLost); // Create Queue
+                GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(LoseSpell2); // Create Queue
                 GameManager.SingleInstance.App.Model.eventModel.SpellLostEvent(this); // Populate Queue
                 GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
             }
         }
         else
         {
-            GameManager.SingleInstance.App.Controller.spellEffectController.StartFlipEffect(this, options, 1, FlipEffectComplete);
             owner.SetIncomingDamage(1);
-            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(LoseHealth); // Create Queue
-            GameManager.SingleInstance.App.Model.eventModel.LoseHealthEvent(owner, 1); // Populate Queue
+            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(LoseSanity2); // Create Queue
+            GameManager.SingleInstance.App.Model.eventModel.LoseSanityEvent(owner, 1); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
     }
 
-    public void SpellLost()
+    public void LoseSpell2()
     {
         owner.LoseSpell(this);
-        GameManager.SingleInstance.App.Controller.spellEffectController.SpellEffectFinished();
+        FlipEffectComplete();
     }
 
-    public void LoseHealth()
+    public void LoseSanity2()
     {
         owner.LoseSanity(owner.GetIncomingDamage());
         owner.SetIncomingDamage(0);
 
-        GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(HealthLost); // Create Queue
+        GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(FlipEffectComplete); // Create Queue
         GameManager.SingleInstance.App.Model.eventModel.DamageTakenEvent(); // Populate Queue
         GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
-    }
-
-    public void HealthLost()
-    {
-        GameManager.SingleInstance.App.Controller.spellEffectController.SpellEffectFinished();
     }
 
     public void FlipEffectComplete()

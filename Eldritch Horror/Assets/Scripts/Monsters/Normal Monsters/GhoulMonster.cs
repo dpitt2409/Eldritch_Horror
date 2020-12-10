@@ -12,7 +12,7 @@ public class GhoulMonster : Monster
         damage = 2;
         monsterText = "If you take damage from the Strength test, gain a Paranoia Condition";
         reckoningText = "";
-        monsterSprite = GameManager.SingleInstance.App.Model.spriteModel.ghoulSprite;
+        monsterSprite = GameManager.SingleInstance.App.Model.monsterSpritesModel.ghoulSprite;
 
         tests = new TestStat[2];
         tests[0] = TestStat.Will;

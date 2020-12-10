@@ -7,7 +7,7 @@ public class LuckyTalismanAsset : Asset
     public LuckyTalismanAsset()
     {
         assetName = "Lucky Talisman";
-        assetPortrait = GameManager.SingleInstance.App.Model.spriteModel.luckyTalismanSprite;
+        assetPortrait = GameManager.SingleInstance.App.Model.assetSpritesModel.luckyTalismanSprite;
         text = "Once per round, you may reroll all of your dice when resolving a test.";
         type = AssetType.Trinket;
         subTypes = new AssetSubType[1];

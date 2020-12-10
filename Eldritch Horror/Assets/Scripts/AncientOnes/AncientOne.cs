@@ -43,9 +43,38 @@ public abstract class AncientOne
 
     public abstract Dictionary<LocationType, List<Encounter>> CreateResearchDeck();
 
-    public abstract void EnterPlay();
-
-    public abstract void LeavePlay();
-
     public abstract void AllMysteriesSolved();
+
+    public virtual void Flipped() { return; }
+
+    public virtual void EnterPlay()
+    {
+        GameManager.SingleInstance.App.Model.eventModel.doomAdvancedEvent += AODoomAdvancedEvent;
+    }
+
+    public virtual void LeavePlay()
+    {
+        GameManager.SingleInstance.App.Model.eventModel.doomAdvancedEvent -= AODoomAdvancedEvent;
+    }
+
+    public void AODoomAdvancedEvent(int num)
+    {
+        if (!flipped)
+        {
+            if (GameManager.SingleInstance.App.Model.doomModel.currentDoom == 0)
+            {
+                EventAction e = new EventAction(EventType.Mandatory, AODoomAdvancedEventCallBack);
+                GameManager.SingleInstance.App.Controller.queueController.AddCallBack(e);
+            }
+        }
+    }
+
+    public void AODoomAdvancedEventCallBack()
+    {
+        flipped = true;
+        GameManager.SingleInstance.App.Controller.locationController.AncientOneFlipped();
+        Flipped();
+
+        GameManager.SingleInstance.App.Controller.ancientOneFlippedMenuController.AncientOneFlipped(GameManager.SingleInstance.App.Controller.queueController.NextCallBack);
+    }
 }

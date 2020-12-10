@@ -269,14 +269,15 @@ public abstract class Investigator : MVC
     {
         if (currentHealth <= 0 || currentSanity <= 0 && deathEncounter == null)
         {
-            EventAction e = new EventAction("death", DeathEvent);
+            EventAction e = new EventAction(EventType.Mandatory, DeathEvent); // This will get updated to provide more information about the event
             App.Controller.queueController.AddCallBack(e);
         }
     }
 
-    // Called when you Die
+    // Called when you Die, not Devoured
     public void DeathEvent()
     {
+        LeaveGame();
         if (currentHealth <= 0)
         {
             deathEncounter = SetDeathEncounter(true);
@@ -285,38 +286,73 @@ public abstract class Investigator : MVC
         {
             deathEncounter = SetDeathEncounter(false);
         }
-        possessions = AccumulatePossessions();
-        Location l = App.Controller.locationController.FindNearestSpaceOfType(currentLocation, LocationType.City)[0];
-        App.Controller.locationController.MoveInvestigator(this, l);
+        possessions = new InvestigatorPossessions(shipTickets, trainTickets, focusTokens, assets, clues, spells);
+
+        bool relocate = false;
+        if (currentLocation.type != LocationType.City)
+        {
+            relocate = true;
+            Location l = App.Controller.locationController.FindNearestSpaceOfType(currentLocation, LocationType.City)[0]; // Choose which City to move body to?
+            App.Controller.locationController.MoveInvestigator(this, l);
+        }
         App.Controller.locationController.InvestigatorDiedOnLocation(this, currentLocation);
-        LeaveGame();
 
-        // pass lead investigator
-        int playerIndex = -1;
-        List<Investigator> allInvestigators = App.Model.investigatorModel.investigators;
-        for (int i = 0; i < allInvestigators.Count; i++)
+        // Return conditions to pool
+        foreach (Condition c in conditions)
         {
-            if (allInvestigators[i].investigatorName == investigatorName)
-            {
-                playerIndex = i;
-            }
+            c.Lost();
+            c.owner = null;
+            App.Model.conditionModel.ReturnConditionToPool(c);
         }
-        if (playerIndex == 0) // This Investigator was the Lead Investigator
-        {
-            App.Model.investigatorModel.LeadInvestigatorSelected(1); // Change this to pick a new Lead Investigator
-            // Decrement Encounter and Action turn order so that the new Lead investigator still gets their turn
-        }
+        conditions.Clear();
+        App.Controller.previewedInvestigatorController.UpdateInvestigator();
 
-        // Advance Doom by 1
-        App.Model.doomModel.AdvanceDoom(1);
-        App.Controller.queueController.CreateCallBackQueue(DeathCallBack); // Create Queue
-        App.Model.eventModel.DoomAdvancedEvent(1); // Populate Queue
-        GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        App.Controller.deadInvestigatorMenuController.InvestigatorDied(this, relocate);
     }
 
-    public void DeathCallBack()
+    public void Devoured()
     {
-        App.Controller.queueController.NextCallBack();
+        LeaveGame();
+        deathEncounter = SetDeathEncounter(true);
+        App.Controller.locationController.LeaveLocation(this);
+        
+        foreach (Clue c in clues)
+        {
+            App.Model.clueModel.ClueSpent(c);
+        }
+        foreach (Condition c in conditions)
+        {
+            c.Lost();
+            c.owner = null;
+            App.Model.conditionModel.ReturnConditionToPool(c);
+        }
+        foreach (Asset a in assets)
+        {
+            a.Lost();
+            a.ownedInvestigator = null;
+            App.Model.assetModel.DiscardAsset(a);
+        }
+        foreach (Spell s in spells)
+        {
+            s.Lost();
+            s.owner = null;
+            App.Model.spellModel.ReturnSpellToPool(s);
+        }
+
+        loreMod = 0;
+        influenceMod = 0;
+        observationMod = 0;
+        willMod = 0;
+        strengthMod = 0;
+        focusTokens = 0;
+        shipTickets = 0;
+        trainTickets = 0;
+        clues.Clear();
+        conditions.Clear();
+        assets.Clear();
+        spells.Clear();
+       
+        App.Controller.previewedInvestigatorController.UpdateInvestigator();
     }
 
     public int GetIncomingDamage()
@@ -327,11 +363,6 @@ public abstract class Investigator : MVC
     public void SetIncomingDamage(int damage)
     {
         incomingDamage = damage;
-    }
-
-    private InvestigatorPossessions AccumulatePossessions()
-    {
-        return new InvestigatorPossessions(shipTickets, trainTickets, focusTokens, assets, clues);
     }
 
     public void GainPossessions(InvestigatorPossessions possessions)
@@ -349,8 +380,13 @@ public abstract class Investigator : MVC
         foreach(Asset a in possessions.assets)
         {
             assets.Add(a);
+            a.ownedInvestigator = this;
         }
-
+        foreach (Spell s in possessions.spells)
+        {
+            spells.Add(s);
+            s.owner = this;
+        }
         foreach(Clue c in possessions.clues)
         {
             clues.Add(c);
@@ -366,7 +402,9 @@ public abstract class Investigator : MVC
 
     public void SpendClue()
     {
-        clues.RemoveAt(clues.Count-1);
+        Clue c = clues[clues.Count - 1];
+        clues.Remove(c);
+        App.Model.clueModel.ClueSpent(c);
         App.Controller.previewedInvestigatorController.UpdateInvestigator();
     }
 
@@ -394,8 +432,9 @@ public abstract class Investigator : MVC
         if (index != -1)
         {
             assets.RemoveAt(index);
-            a.ownedInvestigator = null;
             a.Lost();
+            a.ownedInvestigator = null;
+            App.Model.assetModel.DiscardAsset(a);
             App.Controller.previewedInvestigatorController.UpdateInvestigator();
         }
     }
@@ -411,7 +450,7 @@ public abstract class Investigator : MVC
         }
     }
 
-    public void LoseSpell(Spell s)
+    public void LoseSpell(Spell s) // Spell is discarded, not traded or lost in some other way
     {
         int index = -1;
         for (int i = 0; i < spells.Count; i++)
@@ -424,8 +463,9 @@ public abstract class Investigator : MVC
         if (index != -1)
         {
             spells.RemoveAt(index);
-            s.owner = null;
             s.Lost();
+            s.owner = null;
+            App.Model.spellModel.ReturnSpellToPool(s);
             App.Controller.previewedInvestigatorController.UpdateInvestigator();
         }
     }

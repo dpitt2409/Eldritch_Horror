@@ -71,4 +71,8 @@ public class ViewContainer : MVC
     public SpellEffectView spellEffectView;
 
     public EndGameView endGameView;
+
+    public DeadInvestigatorMenuView deadInvestigatorMenuView;
+
+    public AncientOneFlippedMenuView ancientOneFlippedMenuView;
 }

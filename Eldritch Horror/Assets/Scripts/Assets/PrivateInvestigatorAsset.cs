@@ -7,7 +7,7 @@ public class PrivateInvestigatorAsset : Asset
     public PrivateInvestigatorAsset()
     {
         assetName = "Private Investigator";
-        assetPortrait = GameManager.SingleInstance.App.Model.spriteModel.privateInvestigatorSprite;
+        assetPortrait = GameManager.SingleInstance.App.Model.assetSpritesModel.privateInvestigatorSprite;
         text = "Gain +1 Observation. You may reroll 1 die when resolving an observation test.";
         type = AssetType.Ally;
         subTypes = new AssetSubType[0];

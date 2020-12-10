@@ -7,7 +7,7 @@ public class PersonalAssistantAsset : Asset
     public PersonalAssistantAsset()
     {
         assetName = "Personal Assistant";
-        assetPortrait = GameManager.SingleInstance.App.Model.spriteModel.personalAssistantSprite;
+        assetPortrait = GameManager.SingleInstance.App.Model.assetSpritesModel.personalAssistantSprite;
         text = "Gain +1 Influence. You may reroll 1 die when resolving an influence test.";
         type = AssetType.Ally;
         subTypes = new AssetSubType[0];
@@ -33,13 +33,13 @@ public class PersonalAssistantAsset : Asset
 
     public void PreTestEvent()
     {
-        EventAction e = new EventAction(assetName, AddBonus);
+        EventAction e = new EventAction(EventType.Mandatory, AddBonus);
         GameManager.SingleInstance.App.Controller.queueController.AddCallBack(e);
     }
 
     public void PostTestEvent()
     {
-        EventAction e = new EventAction(assetName, UseReroll);
+        EventAction e = new EventAction(EventType.Mandatory, UseReroll);
         GameManager.SingleInstance.App.Controller.queueController.AddCallBack(e);
     }
 
@@ -71,5 +71,4 @@ public class PersonalAssistantAsset : Asset
     {
         GameManager.SingleInstance.App.Model.testModel.SetReroll();
     }
-
 }

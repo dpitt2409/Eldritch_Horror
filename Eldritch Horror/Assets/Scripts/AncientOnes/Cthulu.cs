@@ -7,10 +7,12 @@ public class Cthulu : AncientOne
     int postFlipSanityTokens = 0;
     int dealSanityInvestigatorIndex = 0;
 
+    public Investigator targetInvestigator; // Used to remember which investigator you deal damage to / move
+
     public Cthulu()
     {
         ancientOneName = "Cthulu";
-        portrait = GameManager.SingleInstance.App.Model.spriteModel.cthuluSprite;
+        portrait = GameManager.SingleInstance.App.Model.ancientOneSpritesModel.cthuluSprite;
         title = "The Madness from the Sea";
         doom = 12;
         numMysteries = 3;
@@ -63,6 +65,7 @@ public class Cthulu : AncientOne
 
     public override void EnterPlay()
     {
+        base.EnterPlay();
         GameManager.SingleInstance.App.Model.eventModel.doomAdvancedEvent += DoomAdvancedEvent;
         GameManager.SingleInstance.App.Model.eventModel.monsterKilledEvent += MonsterKilledEvent;
         GameManager.SingleInstance.App.Model.eventModel.reckoningEvent += ReckoningEvent;
@@ -71,6 +74,7 @@ public class Cthulu : AncientOne
 
     public override void LeavePlay()
     {
+        base.LeavePlay();
         GameManager.SingleInstance.App.Model.eventModel.doomAdvancedEvent -= DoomAdvancedEvent;
         GameManager.SingleInstance.App.Model.eventModel.monsterKilledEvent -= MonsterKilledEvent;
         GameManager.SingleInstance.App.Model.eventModel.reckoningEvent -= ReckoningEvent;
@@ -96,21 +100,17 @@ public class Cthulu : AncientOne
 
     public void DoomAdvancedEvent(int num)
     {
-        if (!flipped)
-        {
-            if (GameManager.SingleInstance.App.Model.doomModel.currentDoom == 0)
-            {
-                flipped = true;
-                GameManager.SingleInstance.App.Controller.locationController.AncientOneFlipped();
-                postFlipSanityTokens = 1;
-                GameManager.SingleInstance.App.Controller.ancientOneController.EnablePostFlipTokens(GameManager.SingleInstance.App.Model.spriteModel.sanitySprite, postFlipSanityTokens);
-            }
-        }
-        else
+        if (flipped)
         {
             postFlipSanityTokens += num;
             GameManager.SingleInstance.App.Controller.ancientOneController.UpdatePostFlipTokenVal(postFlipSanityTokens);
         }
+    }
+
+    public override void Flipped()
+    {
+        postFlipSanityTokens = 1;
+        GameManager.SingleInstance.App.Controller.ancientOneController.EnablePostFlipTokens(GameManager.SingleInstance.App.Model.gameSpritesModel.sanitySprite, postFlipSanityTokens);
     }
 
     public void MonsterKilledEvent(Monster m)
@@ -196,38 +196,48 @@ public class Cthulu : AncientOne
         GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
     }
 
-    public void TravelEvent(Location l)
+    public void TravelEvent(Location l, Investigator i)
     {
         if (l.eldritchTokensOnLocation.Count > 0)
         {
-            EventAction e = new EventAction("Cthulu Travel Event", TravelEventCallBack);
+            targetInvestigator = i;
+
+            EventAction e = new EventAction(EventType.Mandatory, TravelEventCallBack);
             GameManager.SingleInstance.App.Controller.queueController.AddCallBack(e);
         }
     }
 
     public void TravelEventCallBack()
     {
-        GameManager.SingleInstance.App.Model.actionPhaseModel.TurnToBeTerminated();
+        if (flipped)
+        {
+            postFlipSanityTokens++;
+            GameManager.SingleInstance.App.Controller.ancientOneController.UpdatePostFlipTokenVal(postFlipSanityTokens);
+        }
+        
+        targetInvestigator.BecomeDelayed();
 
-        postFlipSanityTokens++;
-        GameManager.SingleInstance.App.Controller.ancientOneController.UpdatePostFlipTokenVal(postFlipSanityTokens);
-
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
-        active.SetIncomingDamage(1);
+        targetInvestigator.SetIncomingDamage(1);
         GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(LoseSanity); // Create Queue
-        GameManager.SingleInstance.App.Model.eventModel.LoseSanityEvent(active, 1); // Populate Queue
+        GameManager.SingleInstance.App.Model.eventModel.LoseSanityEvent(targetInvestigator, 1); // Populate Queue
         GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
     }
 
     public void LoseSanity()
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
-        active.LoseSanity(active.GetIncomingDamage());
-        active.SetIncomingDamage(0);
+        if (targetInvestigator.deathEncounter != null) // The Investigator died during the predamage event
+        {
+            GameManager.SingleInstance.App.Controller.queueController.NextCallBack();
+        }
+        else
+        {
+            targetInvestigator.LoseSanity(targetInvestigator.GetIncomingDamage());
+            targetInvestigator.SetIncomingDamage(0);
 
-        GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(SanityLost); // Create Queue
-        GameManager.SingleInstance.App.Model.eventModel.DamageTakenEvent(); // Populate Queue
-        GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(SanityLost); // Create Queue
+            GameManager.SingleInstance.App.Model.eventModel.DamageTakenEvent(); // Populate Queue
+            GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        }
     }
 
     public void SanityLost()

@@ -34,5 +34,5 @@ public abstract class Monster
 
     public virtual void FinishTest1(int numSuccesses) { GameManager.SingleInstance.App.Controller.combatController.StartTest2(); }
 
-    public virtual void FinishTest2(int numSuccesses) { GameManager.SingleInstance.App.Controller.combatController.FinishFight(); }
+    public virtual void FinishTest2(int numSuccesses) { GameManager.SingleInstance.App.Controller.combatController.FinishFight(); } // Gets called even if the monster is killed ?
 }

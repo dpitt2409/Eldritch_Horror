@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class DebtCondition : Condition
 {
+    private Investigator target; // Reference incase Investigator dies during effect
+
     public DebtCondition(int index)
     {
         conditionName = "Debt";
         type = ConditionType.Deal;
-        conditionPortrait = GameManager.SingleInstance.App.Model.spriteModel.debtSprite;
+        conditionPortrait = GameManager.SingleInstance.App.Model.conditionSpritesModel.debtSprite;
         conditionText = "Local Action: Test Influence. If you pass, dicard this Condition.";
         reckoningText = "Some men have come to collect your debt. Flip this card.";
         copyIndex = index;
@@ -42,7 +44,7 @@ public class DebtCondition : Condition
     {
         GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator.ActionPerformed(owner.investigatorName + " Debt Local Action");
         GameManager.SingleInstance.App.Controller.conditionEffectController.StartConditionEffect(this, LocalActionComplete);
-        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Influence, 0, TestType.Test, InfluenceTested);
+        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Influence, 0, TestType.Test, owner, InfluenceTested);
     }
 
     public void InfluenceTested(List<int> results)
@@ -96,7 +98,7 @@ public class DebtCondition : Condition
 
     public void FlipCard()
     {
-        //GameManager.SingleInstance.App.View.ReckoningMythosView.ReckoningMinimized();
+        target = owner;
         GameManager.SingleInstance.App.Controller.openMenuController.HideOpenMenu();
         string finishedText = owner.investigatorName + "'s Debt has been resolved.";
         GameManager.SingleInstance.App.Controller.reckoningMythosController.SetReckoningText(finishedText);
@@ -118,17 +120,15 @@ public class DebtCondition : Condition
         string title = "Hitmen";
         string text = "You see now that it was no ordinary bank you borrowed from. Some armed men confront you and demand that you repay what you owe. \n\r Test Strength \n\r If you fail, lose 3 Health. \n\r Then discard this card.";
         GameManager.SingleInstance.App.Controller.conditionEffectController.StartFlipEffect(title, text, FinishFlipEffect0);
-        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Strength, 0, TestType.Test, Effect0Tested);
+        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Strength, 0, TestType.Test, owner, Effect0Tested);
     }
 
     public void Effect0Tested(List<int> results)
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
-
         int numSuccesses = 0;
         foreach (int num in results)
         {
-            if (num >= active.SUCCESS)
+            if (num >= owner.SUCCESS)
             {
                 numSuccesses++;
             }
@@ -137,9 +137,9 @@ public class DebtCondition : Condition
         if (numSuccesses == 0)
         {
             GameManager.SingleInstance.App.Controller.conditionEffectController.SetResultText("Fail \n\r Lose 3 Health and discard this Condition");
-            active.SetIncomingDamage(3);
+            owner.SetIncomingDamage(3);
             GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(LoseHealth); // Create Queue
-            GameManager.SingleInstance.App.Model.eventModel.LoseHealthEvent(active, 3); // Populate Queue
+            GameManager.SingleInstance.App.Model.eventModel.LoseHealthEvent(owner, 3); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
         else
@@ -154,9 +154,8 @@ public class DebtCondition : Condition
 
     public void LoseHealth()
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
-        active.LoseHealth(active.GetIncomingDamage());
-        active.SetIncomingDamage(0);
+        owner.LoseHealth(owner.GetIncomingDamage());
+        owner.SetIncomingDamage(0);
 
         GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(HealthLost); // Create Queue
         GameManager.SingleInstance.App.Model.eventModel.DamageTakenEvent(); // Populate Queue
@@ -165,9 +164,16 @@ public class DebtCondition : Condition
 
     public void HealthLost()
     {
-        GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(ConditionLostEventComplete0); // Create Queue
-        GameManager.SingleInstance.App.Model.eventModel.ConditionLostEvent(this); // Populate Queue
-        GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        if (target.deathEncounter != null) // Investigator died to the damage
+        {
+            GameManager.SingleInstance.App.Controller.conditionEffectController.ConditionEffectFinished();
+        }
+        else 
+        {
+            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(ConditionLostEventComplete0); // Create Queue
+            GameManager.SingleInstance.App.Model.eventModel.ConditionLostEvent(this); // Populate Queue
+            GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        }
     }
 
     public void ConditionLostEventComplete0()
@@ -178,11 +184,8 @@ public class DebtCondition : Condition
 
     public void FinishFlipEffect0()
     {
-        //GameManager.SingleInstance.App.View.ReckoningMythosView.ReckoningMaximized();
         GameManager.SingleInstance.App.Controller.openMenuController.EnableOpenMenu();
-
         GameManager.SingleInstance.App.Controller.reckoningMythosController.FinishReckoning();
-        //GameManager.SingleInstance.App.Controller.reckoningMythosController.Next();
     }
 
     public void FlipEffect1()
@@ -190,17 +193,15 @@ public class DebtCondition : Condition
         string title = "Beyond Riches";
         string text = "The man wears a hat and a brown trenchcoat. 'We do not want money,' he hisses and grabs your throat. You feel as if part of your identity is being stolen from you. \n\r Test Will \n\r If you fail, a fragment of your soul is ripped away; lose 3 Sanity. \n\r Then discard this card.";
         GameManager.SingleInstance.App.Controller.conditionEffectController.StartFlipEffect(title, text, FinishFlipEffect1);
-        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Will, 0, TestType.Test, Effect1Tested);
+        GameManager.SingleInstance.App.Controller.testController.StartTest(TestStat.Will, 0, TestType.Test, owner, Effect1Tested);
     }
 
     public void Effect1Tested(List<int> results)
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
-
         int numSuccesses = 0;
         foreach (int num in results)
         {
-            if (num >= active.SUCCESS)
+            if (num >= owner.SUCCESS)
             {
                 numSuccesses++;
             }
@@ -209,15 +210,14 @@ public class DebtCondition : Condition
         if (numSuccesses == 0)
         {
             GameManager.SingleInstance.App.Controller.conditionEffectController.SetResultText("Fail \n\r Lose 3 Sanity and discard this Condition");
-            active.SetIncomingDamage(3);
+            owner.SetIncomingDamage(3);
             GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(LoseSanity); // Create Queue
-            GameManager.SingleInstance.App.Model.eventModel.LoseSanityEvent(active, 3); // Populate Queue
+            GameManager.SingleInstance.App.Model.eventModel.LoseSanityEvent(owner, 3); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
         }
         else
         {
             GameManager.SingleInstance.App.Controller.conditionEffectController.SetResultText("Pass \n\r Discard this Condition");
-
             GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(ConditionLostEventComplete1); // Create Queue
             GameManager.SingleInstance.App.Model.eventModel.ConditionLostEvent(this); // Populate Queue
             GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
@@ -226,9 +226,8 @@ public class DebtCondition : Condition
 
     public void LoseSanity()
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
-        active.LoseSanity(active.GetIncomingDamage());
-        active.SetIncomingDamage(0);
+        owner.LoseSanity(owner.GetIncomingDamage());
+        owner.SetIncomingDamage(0);
 
         GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(SanityLost); // Create Queue
         GameManager.SingleInstance.App.Model.eventModel.DamageTakenEvent(); // Populate Queue
@@ -237,9 +236,16 @@ public class DebtCondition : Condition
 
     public void SanityLost()
     {
-        GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(ConditionLostEventComplete1); // Create Queue
-        GameManager.SingleInstance.App.Model.eventModel.ConditionLostEvent(this); // Populate Queue
-        GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        if (target.deathEncounter != null) // Investigator died to the damage
+        {
+            GameManager.SingleInstance.App.Controller.conditionEffectController.ConditionEffectFinished();
+        }
+        else
+        {
+            GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(ConditionLostEventComplete1); // Create Queue
+            GameManager.SingleInstance.App.Model.eventModel.ConditionLostEvent(this); // Populate Queue
+            GameManager.SingleInstance.App.Controller.queueController.StartCallBackQueue(); // Start Queue
+        }
     }
 
     public void ConditionLostEventComplete1()
@@ -250,10 +256,7 @@ public class DebtCondition : Condition
 
     public void FinishFlipEffect1()
     {
-        //GameManager.SingleInstance.App.View.ReckoningMythosView.ReckoningMaximized();
         GameManager.SingleInstance.App.Controller.openMenuController.EnableOpenMenu();
-
         GameManager.SingleInstance.App.Controller.reckoningMythosController.FinishReckoning();
-        //GameManager.SingleInstance.App.Controller.reckoningMythosController.Next();
     }
 }

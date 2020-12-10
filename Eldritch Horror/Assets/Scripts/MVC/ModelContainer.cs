@@ -6,8 +6,20 @@ public class ModelContainer : MVC
 {
     public SetupModel setupModel;
 
-    public SpriteModel spriteModel;
-    
+    public AssetSpritesModel assetSpritesModel;
+
+    public SpellSpritesModel spellSpritesModel;
+
+    public ConditionSpritesModel conditionSpritesModel;
+
+    public AncientOneSpritesModel ancientOneSpritesModel;
+
+    public MythosSpritesModel mythosSpritesModel;
+
+    public MonsterSpritesModel monsterSpritesModel;
+
+    public GameSpritesModel gameSpritesModel;
+
     public EventModel eventModel;
 
     public ClueModel clueModel;
@@ -17,6 +29,8 @@ public class ModelContainer : MVC
     public SpellModel spellModel;
 
     public ConditionModel conditionModel;
+
+    public ArtifactModel artifactModel;
 
     public EncounterModel encounterModel;
 
@@ -94,5 +108,7 @@ public class ModelContainer : MVC
 
     public SpellEffectModel spellEffectModel;
 
-    public ArtifactModel artifactModel;
+    public DeadInvestigatorMenuModel deadInvestigatorMenuModel;
+
+    public AncientOneFlippedMenuModel ancientOneFlippedMenuModel;
 }

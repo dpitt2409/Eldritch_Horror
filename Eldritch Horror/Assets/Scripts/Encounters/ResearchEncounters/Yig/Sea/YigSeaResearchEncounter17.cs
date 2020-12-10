@@ -16,8 +16,7 @@ public class YigSeaResearchEncounter17 : Encounter
 
     public override void FinishEncounter(bool passed)
     {
-
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
+        Investigator active = GameManager.SingleInstance.App.Model.encounterMenuModel.currentInvestigator;
         if (passed)
         {
             // Gain this Clue
@@ -44,5 +43,4 @@ public class YigSeaResearchEncounter17 : Encounter
     {
         GameManager.SingleInstance.App.Controller.encounterMenuController.CompleteEncounter(); // End Encounter
     }
-
 }

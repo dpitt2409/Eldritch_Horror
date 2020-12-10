@@ -48,6 +48,8 @@ public class GameManager : MVC
         App.Controller.actionPhaseController.StartActionPhase();
 
         /*
+        Condition c = App.Model.conditionModel.DrawConditionByName("Dark Pact");
+        App.Model.investigatorModel.activeInvestigator.GainCondition(c);
         App.Model.clueModel.SpawnClues(10); // Spawn 10 Clues
         Location l = App.Model.locationModel.FindLocationByName("Antarctica");
         App.Controller.locationController.SpawnGate(l);
@@ -74,7 +76,6 @@ public class GameManager : MVC
     {
         // Start Mythos Phase
         App.Controller.mythosController.StartMythosPhase();
-        //App.Controller.investigatorController.StartLeadInvestigatorSelection();
     }
 
     public void MythosPhaseComplete()
@@ -93,7 +94,7 @@ public class GameManager : MVC
         {
             if (i.deathEncounter != null) // Investigator is dead
             {
-                EventAction e = new EventAction("Select new Investigator", App.Controller.setupController.DraftNewInvestigator);
+                EventAction e = new EventAction(EventType.Mandatory, App.Controller.setupController.DraftNewInvestigator);
                 App.Controller.queueController.AddCallBack(e);
             }
         }
@@ -104,10 +105,5 @@ public class GameManager : MVC
     {
         // Select Lead Investigator
         App.Controller.investigatorController.StartLeadInvestigatorSelection();
-    }
-
-    public void DebugHelper(string s)
-    {
-        Debug.Log(s);
     }
 }

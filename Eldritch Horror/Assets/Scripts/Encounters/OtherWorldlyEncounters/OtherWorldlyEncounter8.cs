@@ -40,7 +40,7 @@ public class OtherWorldlyEncounter8 : ComplexEncounter
             if (passed)
             {
                 // Fire 'Close this Gate' Event
-                Location l = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator.currentLocation;
+                Location l = GameManager.SingleInstance.App.Model.complexEncounterMenuModel.currentInvestigator.currentLocation;
                 GameManager.SingleInstance.App.Model.gateModel.SetClosingGate(l);
 
                 GameManager.SingleInstance.App.Controller.queueController.CreateCallBackQueue(CloseThisGateEvent); // Create Queue

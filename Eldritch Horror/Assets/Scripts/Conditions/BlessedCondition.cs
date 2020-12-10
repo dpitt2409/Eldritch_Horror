@@ -12,16 +12,6 @@ public class BlessedCondition : Condition
         //GameManager.SingleInstance.loseSanityEvent += LoseSanityEvent;
     }
 
-    public void LoseHealthEvent()
-    {
-        GameManager.SingleInstance.DebugHelper("Blessed Lose Health Event");
-    }
-
-    public void LoseSanityEvent()
-    {
-        GameManager.SingleInstance.DebugHelper("Blessed Lose Sanity Event");
-    }
-
     public override void Gained()
     {
 

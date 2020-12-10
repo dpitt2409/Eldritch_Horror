@@ -3,6 +3,8 @@ using UnityEngine;
 
 public delegate void EventActionCallBack();
 
+public delegate bool EventValidity();
+
 public struct Connection
 {
     public Location destination;
@@ -18,14 +20,37 @@ public struct Connection
 
 public struct EventAction
 {
-    public string name;
-
+    public EventType type;
     public EventActionCallBack callback;
+    public EventValidity validityCallBack;
+    public Spell spell;
+    public Asset asset;
 
-    public EventAction(string n, EventActionCallBack c)
+    public EventAction(EventType t, EventActionCallBack c)
     {
-        name = n;
+        type = t;
         callback = c;
+        validityCallBack = null;
+        spell = null;
+        asset = null;
+    }
+
+    public EventAction(EventType t, EventActionCallBack c, EventValidity ev, Asset a)
+    {
+        type = t;
+        callback = c;
+        validityCallBack = ev;
+        spell = null;
+        asset = a;
+    }
+
+    public EventAction(EventType t, EventActionCallBack c, EventValidity ev, Spell s)
+    {
+        type = t;
+        callback = c;
+        validityCallBack = ev;
+        spell = s;
+        asset = null;
     }
 }
 
@@ -69,28 +94,72 @@ public struct InvestigatorPossessions
     public int focusTokens;
     public List<Asset> assets;
     public List<Clue> clues;
+    public List<Spell> spells;
 
-    public InvestigatorPossessions(int ship, int train, int focus, List<Asset> a, List<Clue> c)
+    public InvestigatorPossessions(int ship, int train, int focus, List<Asset> a, List<Clue> c, List<Spell> s)
     {
         shipTickets = ship;
         trainTickets = train;
         focusTokens = focus;
-        assets = a;
-        clues = c;
+        assets = new List<Asset>(a);
+        clues = new List<Clue>(c);
+        spells = new List<Spell>(s);
     }
 }
 
 public struct EventQueue
 {
-    public List<EventAction> queueCallBacks;
-    public int callBackIndex;
+    //public List<EventAction> queueCallBacks;
+    public List<EventAction> mandatoryCallBacks;
+    public List<EventAction> optionalCallBacks;
     public QueueCallBack finishedCallBack;
 
     public EventQueue(QueueCallBack callback)
     {
-        queueCallBacks = new List<EventAction>();
-        callBackIndex = -1;
+        //queueCallBacks = new List<EventAction>();
+        mandatoryCallBacks = new List<EventAction>();
+        optionalCallBacks = new List<EventAction>();
         finishedCallBack = callback;
+    }
+
+    public void AddEvent(EventAction e)
+    {
+        if (e.type == EventType.Mandatory)
+        {
+            mandatoryCallBacks.Add(e);
+        }
+        else
+        {
+            optionalCallBacks.Add(e);
+        }
+    }
+
+    public void ExecuteEvent(EventAction e)
+    {
+        if (e.type == EventType.Mandatory)
+        {
+            mandatoryCallBacks.Remove(e);
+        }
+        else
+        {
+            optionalCallBacks.Remove(e);
+        }
+    }
+
+    public void RemoveInvalidOptionalEvents()
+    {
+        int index = 0;
+        while (index < optionalCallBacks.Count)
+        {
+            if (!optionalCallBacks[index].validityCallBack())
+            {
+                optionalCallBacks.RemoveAt(index);
+            }
+            else
+            {
+                index++;
+            }
+        }
     }
 }
 
@@ -140,61 +209,97 @@ public struct ReckoningEvent
 
 public struct MultipleOptionMenuObject
 {
+    public string text;
     public MultipleOptionType objectType;
     public Monster monster;
     public Asset asset;
     public Investigator investigator;
     public TestStat stat;
     public ReckoningEvent reckoning;
+    public Spell spell;
+
+    public MultipleOptionMenuObject(MultipleOptionType type, string s)
+    {
+        text = s;
+        objectType = type;
+        monster = null;
+        asset = null;
+        investigator = null;
+        stat = TestStat.None;
+        reckoning = new ReckoningEvent();
+        spell = null;
+    }
 
     public MultipleOptionMenuObject(MultipleOptionType type, Monster m)
     {
+        text = "";
         objectType = type;
         monster = m;
         asset = null;
         investigator = null;
         stat = TestStat.None;
         reckoning = new ReckoningEvent();
+        spell = null;
     }
 
     public MultipleOptionMenuObject(MultipleOptionType type, Asset a)
     {
+        text = "";
         objectType = type;
         monster = null;
         asset = a;
         investigator = null;
         stat = TestStat.None;
         reckoning = new ReckoningEvent();
+        spell = null;
     }
 
     public MultipleOptionMenuObject(MultipleOptionType type, Investigator i)
     {
+        text = "";
         objectType = type;
         monster = null;
         asset = null;
         investigator = i;
         stat = TestStat.None;
         reckoning = new ReckoningEvent();
+        spell = null;
     }
 
     public MultipleOptionMenuObject(MultipleOptionType type, TestStat s)
     {
+        text = "";
         objectType = type;
         monster = null;
         asset = null;
         investigator = null;
         stat = s;
         reckoning = new ReckoningEvent();
+        spell = null;
     }
 
     public MultipleOptionMenuObject(MultipleOptionType type, ReckoningEvent re)
     {
+        text = "";
         objectType = type;
         monster = null;
         asset = null;
         investigator = null;
         stat = TestStat.None;
         reckoning = re;
+        spell = null;
+    }
+
+    public MultipleOptionMenuObject(MultipleOptionType type, Spell s)
+    {
+        text = "";
+        objectType = type;
+        monster = null;
+        asset = null;
+        investigator = null;
+        stat = TestStat.None;
+        reckoning = new ReckoningEvent();
+        spell = s;
     }
 }
 

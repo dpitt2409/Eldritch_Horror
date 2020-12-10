@@ -36,8 +36,6 @@ public class LilyChen : Investigator
         base.JoinGame();
 
         //App.Model.eventModel.actionListEvent += AddPlayerActionToList;
-        //App.Model.eventModel.travelEvent += TestTravelEvent;
-        //App.Model.eventModel.restEvent += TestRestEvent;
     }
 
     public override Encounter SetDeathEncounter(bool health)
@@ -50,43 +48,6 @@ public class LilyChen : Investigator
         {
             return new LilyChenSanityDeathEncounter();
         }
-    }
-
-    public void OnDestroy()
-    {
-        //App.Model.eventModel.actionListEvent -= AddPlayerActionToList;
-        //App.Model.eventModel.travelEvent -= TestTravelEvent;
-        //App.Model.eventModel.restEvent -= TestRestEvent;
-    }
-
-    public void TestTravelEvent()
-    {
-        if (!(App.Model.investigatorModel.activeInvestigator.investigatorName == investigatorName))
-            return;
-
-        EventAction e = new EventAction("test", TestTravelCallBack);
-        App.Controller.queueController.AddCallBack(e);
-    }
-
-    public void TestRestEvent()
-    {
-        if (!(App.Model.investigatorModel.activeInvestigator.investigatorName == investigatorName))
-            return;
-
-        EventAction e = new EventAction("test", TestRestCallBack);
-        App.Controller.queueController.AddCallBack(e);
-    }
-
-    public void TestTravelCallBack()
-    {
-        Debug.Log("Travel Action is waiting for me to complete");
-        App.Controller.queueController.NextCallBack();
-    }
-
-    public void TestRestCallBack()
-    {
-        Debug.Log("Rest Action is waiting for me to complete");
-        App.Controller.queueController.NextCallBack();
     }
 
     public void AddPlayerActionToList()

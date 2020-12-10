@@ -25,7 +25,7 @@ public class CthuluMystery1 : Mystery
 
     public void ResearchClueClaimedEvent()
     {
-        EventAction e = new EventAction("Mystery Event", ResearchClueGained);
+        EventAction e = new EventAction(EventType.Mandatory, ResearchClueGained);
         GameManager.SingleInstance.App.Controller.queueController.AddCallBack(e);
     }
 

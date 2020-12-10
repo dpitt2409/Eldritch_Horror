@@ -57,7 +57,7 @@ public class FracturedRealityRumor : OngoingEffect
     public void ReckoningEvent()
     {
         string title = effectTitle + " Rumor Reckoning";
-        ReckoningEvent re = new ReckoningEvent(title, reckoningText, StartReckoning, ReckoningSource.Ongoing, GameManager.SingleInstance.App.Model.spriteModel.rumorSprite);
+        ReckoningEvent re = new ReckoningEvent(title, reckoningText, StartReckoning, ReckoningSource.Ongoing, GameManager.SingleInstance.App.Model.mythosSpritesModel.rumorSprite);
         GameManager.SingleInstance.App.Model.reckoningMythosModel.AddReckoningEvent(re);
     }
 

@@ -1,10 +1,4 @@
 ﻿
-public enum GameEvent
-{
-    LOSE_HEALTH,
-    LOSE_SANITY
-}
-
 public enum TestStat
 {
     Lore,
@@ -124,11 +118,14 @@ public enum ReckoningSource
 
 public enum MultipleOptionType
 {
+    Text,
     Monster,
     Reckoning,
     Asset,
     Investigator,
-    Stat
+    Stat,
+    AssetEvent,
+    SpellEvent
 }
 
 public enum SpellType
@@ -136,4 +133,10 @@ public enum SpellType
     Ritual,
     Incantation,
     Glamour
+}
+
+public enum EventType
+{
+    Optional,
+    Mandatory
 }

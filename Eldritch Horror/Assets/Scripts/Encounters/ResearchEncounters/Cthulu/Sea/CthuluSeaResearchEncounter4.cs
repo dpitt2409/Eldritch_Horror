@@ -16,7 +16,7 @@ public class CthuluSeaResearchEncounter4 : Encounter
 
     public override void FinishEncounter(bool passed)
     {
-        Investigator active = GameManager.SingleInstance.App.Model.investigatorModel.activeInvestigator;
+        Investigator active = GameManager.SingleInstance.App.Model.encounterMenuModel.currentInvestigator;
         if (passed)
         {
             // Gain this Clue
